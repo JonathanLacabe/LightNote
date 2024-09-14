@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LightNote - MIDI Editor</string>
+    <string name="descriptionLogo">The Logo of LightNote, with the text \'Light\' being drawn brightly, and \'Note\' being drawn with music notes.</string>
 </resources>
