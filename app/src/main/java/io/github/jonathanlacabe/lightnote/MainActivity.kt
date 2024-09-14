@@ -1,25 +1,30 @@
 package io.github.jonathanlacabe.lightnote
 
-
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import io.github.jonathanlacabe.lightnote.databinding.ActivityMainBinding
 
 class MainActivity : ComponentActivity() {
 
-    // View Binding for better XML layout handling
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inflate the layout from activity_main.xml using View Binding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Now you can access views in your XML using binding.<view_id>
+        // Handle New button click
         binding.newButton.setOnClickListener {
-            // Handle button clicks here
+            val intent = Intent(this, NewActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Handle F.A.Q. button click
+        binding.faqButton.setOnClickListener {
+            val intent = Intent(this, FaqActivity::class.java)
+            startActivity(intent)
         }
     }
 }

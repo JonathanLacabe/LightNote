@@ -12,6 +12,7 @@
         android:id="@+id/appLogo"
         android:layout_width="430dp"
         android:layout_height="205dp"
+        android:layout_marginTop="-20dp"
         android:contentDescription="@string/descriptionLogo"
         android:src="@drawable/app_logo"
         app:layout_constraintEnd_toEndOf="parent"

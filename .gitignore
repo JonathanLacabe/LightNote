@@ -1,4 +1,5 @@
 *.iml
+gradle
 .gradle
 /local.properties
 /.idea/caches
@@ -13,3 +14,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+*.gradle
+gradle/libs.versions.toml
+settings.gradle
+gradle.properties
+*.gradle
+*.toml
