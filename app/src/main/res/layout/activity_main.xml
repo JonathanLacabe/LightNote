@@ -4,15 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#323538"
+    android:theme="@style/Theme.LightNote"
     tools:context=".MainActivity">
 
     <!-- App Logo -->
     <ImageView
         android:id="@+id/appLogo"
-        android:layout_width="430dp"
-        android:layout_height="205dp"
-        android:layout_marginTop="-20dp"
+        android:layout_width="440dp"
+        android:layout_height="208dp"
         android:contentDescription="@string/descriptionLogo"
         android:src="@drawable/app_logo"
         app:layout_constraintEnd_toEndOf="parent"

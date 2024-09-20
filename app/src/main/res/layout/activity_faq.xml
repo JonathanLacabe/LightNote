@@ -4,9 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#323538"
+    android:theme="@style/Theme.LightNote"
     tools:context=".FaqActivity">
 
-    <!-- Blank page for F.A.Q. activity -->
+    <!-- Text for F.A.Q. page -->
+    <TextView
+        android:id="@+id/faqText"
+        android:layout_width="662dp"
+        android:layout_height="195dp"
+        android:layout_marginTop="70dp"
+        android:fontFamily="@font/didot_bold"
+        android:text="Programming and Design by Jonathan Lacabe\nArtistry by Shoaib Pasha\n\nLightNote\nThus Spoke MIDI\n2024"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Back Button -->
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/button_background"
+        android:text="Back"
+        android:textSize="42sp"
+        android:textColor="#FFFFFF"
+        android:fontFamily="@font/quadriga_bq"
+        app:layout_constraintTop_toBottomOf="@id/faqText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.3"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

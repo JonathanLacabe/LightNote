@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#323538"
+    android:theme="@style/Theme.LightNote"
     tools:context=".NewActivity">
 
     <!-- Blank page for New activity -->

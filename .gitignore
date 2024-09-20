@@ -20,3 +20,7 @@ settings.gradle
 gradle.properties
 *.gradle
 *.toml
+gradle.properties
+settings.gradle
+*.properties
+*.gradle

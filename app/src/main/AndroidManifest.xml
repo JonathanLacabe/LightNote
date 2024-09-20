@@ -25,8 +25,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewActivity" />
-        <activity android:name=".FaqActivity" />
+
+        <activity
+            android:name=".NewActivity"
+            android:theme="@style/Theme.LightNote"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            tools:ignore="DiscouragedApi"
+            />
+
+        <activity
+            android:name=".FaqActivity"
+            android:theme="@style/Theme.LightNote"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            tools:ignore="DiscouragedApi"
+            />
     </application>
 
 </manifest>
