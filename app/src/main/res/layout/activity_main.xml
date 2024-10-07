@@ -4,68 +4,83 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_with_constellations"
     android:theme="@style/Theme.LightNote"
     tools:context=".MainActivity">
 
-    <!-- App Logo -->
+    <!-- App Logo with Glow -->
     <ImageView
         android:id="@+id/appLogo"
         android:layout_width="440dp"
         android:layout_height="208dp"
         android:contentDescription="@string/descriptionLogo"
-        android:src="@drawable/app_logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.5" /> <!-- Reduce to 50% width -->
+        android:src="@drawable/app_logo_transp"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.5"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    android:scaleType="fitCenter" />
 
-    <!-- New File Button -->
-    <Button
-        android:id="@+id/newButton"
-        android:layout_width="100dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="-12dp"
-        android:background="@drawable/button_background"
-        android:fontFamily="@font/quadriga_bq"
-        android:text="NEW"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appLogo"
-        app:layout_constraintWidth_percent="0.3" /> <!-- Limit button width -->
+
+    <!-- Glow applied over the logo -->
+    <ImageView
+        android:id="@+id/logoGlow"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/glow_effect"
+        app:layout_constraintTop_toTopOf="@id/appLogo"
+        app:layout_constraintEnd_toEndOf="@id/appLogo"
+        android:layout_marginTop="50dp"
+    android:layout_marginEnd="20dp" />
+
+    <!-- New File Button with Glow -->
+<Button
+android:id="@+id/newButton"
+android:layout_width="200dp"
+android:layout_height="60dp"
+android:layout_marginTop="-30dp"
+android:text="~New~"
+android:textSize="24sp"
+android:textColor="#FFD700"
+android:fontFamily="@font/quadriga_bq"
+android:background="@drawable/button_glow_effect"
+android:layout_gravity="center"
+app:layout_constraintTop_toBottomOf="@id/appLogo"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Open File Button -->
-    <Button
-        android:id="@+id/openButton"
-        android:layout_width="100dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/button_background"
-        android:text="OPEN"
-        android:textSize="24sp"
-        android:textColor="#FFFFFF"
-        android:fontFamily="@font/quadriga_bq"
-        app:layout_constraintTop_toBottomOf="@id/newButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.3"/>
+<Button
+android:id="@+id/openButton"
+android:layout_width="200dp"
+android:layout_height="60dp"
+android:layout_marginTop="0dp"
+android:text="~Open~"
+android:textSize="24sp"
+android:textColor="#FFD700"
+android:fontFamily="@font/quadriga_bq"
+android:background="@drawable/button_glow_effect"
+android:layout_gravity="center"
+app:layout_constraintTop_toBottomOf="@id/newButton"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent" />
 
     <!-- F.A.Q. Button -->
-    <Button
-        android:id="@+id/faqButton"
-        android:layout_width="100dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/button_background"
-        android:text="F.A.Q."
-        android:textSize="24sp"
-        android:textColor="#FFFFFF"
-        android:fontFamily="@font/quadriga_bq"
-        app:layout_constraintTop_toBottomOf="@id/openButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.3"/>
+<Button
+android:id="@+id/faqButton"
+android:layout_width="200dp"
+android:layout_height="60dp"
+android:layout_marginTop="0dp"
+android:text="~F.A.Q.~"
+android:textSize="24sp"
+android:textColor="#FFD700"
+android:fontFamily="@font/quadriga_bq"
+android:background="@drawable/button_glow_effect"
+android:layout_gravity="center"
+app:layout_constraintTop_toBottomOf="@id/openButton"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
