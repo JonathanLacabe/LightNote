@@ -1,106 +1,118 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/topButtonsLayout"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
-    android:background="#2A2B2D"
-    android:padding="10dp">
+    android:layout_height="match_parent"
+    android:background="#2A2B2D">
 
-    <!-- File Button -->
-    <TextView
-        android:id="@+id/fileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="File"
-        android:textColor="#FFFFFF"
-        android:textSize="32sp"
-        android:layout_marginStart="10dp"
-    android:fontFamily="@font/quadriga_bq"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent" />
-
-    <!-- Divider 1 -->
-    <View
-        android:layout_width="2dp"
-        android:layout_height="match_parent"
-        android:background="#5A5B5D"
-        app:layout_constraintStart_toEndOf="@id/fileButton"
-        android:layout_marginStart="18dp" />
-
-    <!-- View Button -->
-    <TextView
-        android:id="@+id/viewButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-    android:fontFamily="@font/quadriga_bq"
-    app:layout_constraintStart_toEndOf="@id/fileButton"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    android:layout_marginStart="37dp" />
-
-    <!-- Divider 2 -->
-    <View
-        android:layout_width="2dp"
-        android:layout_height="match_parent"
-        android:background="#5A5B5D"
-        app:layout_constraintStart_toEndOf="@id/viewButton"
-        android:layout_marginStart="17dp" />
-
-    <!-- Help Button -->
-    <TextView
-        android:id="@+id/helpButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Help"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-    android:fontFamily="@font/quadriga_bq"
-    app:layout_constraintStart_toEndOf="@id/viewButton"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    android:layout_marginStart="37dp" />
-
-    <!-- Divider 3 -->
-    <View
-        android:layout_width="2dp"
-        android:layout_height="match_parent"
-        android:background="#5A5B5D"
-        app:layout_constraintStart_toEndOf="@id/helpButton"
-        android:layout_marginStart="12dp" />
-
-    <!-- Spacer for Empty Area -->
-    <Space
+    <!-- Top Button Layout (File, View, Help) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topButtonsLayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/helpButton"
+        android:layout_height="56dp"
+        android:background="#2A2B2D"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/makeLightsButton"
-        android:layout_marginStart="12dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="10dp">
 
-    <!-- Divider 4 -->
-    <View
-        android:layout_width="2dp"
-        android:layout_height="match_parent"
-        android:background="#5A5B5D"
-        app:layout_constraintStart_toStartOf="@id/makeLightsButton"
-        android:layout_marginStart="-12dp" />
+        <!-- File Button -->
+        <TextView
+            android:id="@+id/fileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="File"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/quadriga_bq"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Make Lights Button -->
-    <TextView
-        android:id="@+id/makeLightsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Make Lights!"
-        android:textColor="#FFFFFF"
-        android:textSize="31sp"
-    android:fontFamily="@font/quadriga_bq"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent" />
+        <!-- Divider 1 -->
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#5A5B5D"
+            app:layout_constraintStart_toEndOf="@id/fileButton"
+            android:layout_marginStart="18dp" />
+
+        <!-- View Button -->
+        <TextView
+            android:id="@+id/viewButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
+            android:fontFamily="@font/quadriga_bq"
+            app:layout_constraintStart_toEndOf="@id/fileButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="37dp" />
+
+        <!-- Divider 2 -->
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#5A5B5D"
+            app:layout_constraintStart_toEndOf="@id/viewButton"
+            android:layout_marginStart="17dp" />
+
+        <!-- Help Button -->
+        <TextView
+            android:id="@+id/helpButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Help"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
+            android:fontFamily="@font/quadriga_bq"
+            app:layout_constraintStart_toEndOf="@id/viewButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="37dp" />
+
+        <!-- Divider 3 -->
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#5A5B5D"
+            app:layout_constraintStart_toEndOf="@id/helpButton"
+            android:layout_marginStart="12dp" />
+
+        <!-- Spacer for Empty Area -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/helpButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/makeLightsButton"
+            android:layout_marginStart="12dp" />
+
+        <!-- Divider 4 -->
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#5A5B5D"
+            app:layout_constraintStart_toStartOf="@id/makeLightsButton"
+            android:layout_marginStart="-12dp" />
+
+        <!-- Make Lights Button -->
+        <TextView
+            android:id="@+id/makeLightsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Make Lights!"
+            android:textColor="#FFFFFF"
+            android:textSize="31sp"
+            android:fontFamily="@font/quadriga_bq"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
