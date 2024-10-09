@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">LightNote - MIDI Player</string>
     <string name="descriptionLogo">The Logo of LightNote, with the text \'Light\' being drawn brightly, and \'Note\' being drawn with music notes.</string>
+    <string name="rewind_button" />
+    <string name="pause_button">Pause</string>
+    <string name="play_button">Play</string>
 </resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#2A2B2D"
+    android:padding="10dp">
+
+    <!-- Piano Roll Editor Option -->
+    <TextView
+        android:id="@+id/pianoRollEditor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Piano Roll Editor"
+        android:textColor="#FFFFFF"
+        android:padding="8dp"
+        android:textSize="18sp"
+        android:background="?attr/selectableItemBackground" />
+
+    <!-- Staff Editor Option (future update: v2) -->
+    <TextView
+        android:id="@+id/staffEditor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Staff Editor"
+        android:textColor="#777777"
+    android:padding="8dp"
+    android:textSize="18sp"
+    android:enabled="false" />
+</LinearLayout>

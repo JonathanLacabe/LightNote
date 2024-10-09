@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#2A2B2D"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tutorialOption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tutorial"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:padding="8dp" />
+
+    <TextView
+        android:id="@+id/githubOption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GitHub"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:padding="8dp" />
+
+    <TextView
+        android:id="@+id/youtubeOption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="YouTube"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:padding="8dp" />
+</LinearLayout>
