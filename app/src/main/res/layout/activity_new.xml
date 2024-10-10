@@ -207,7 +207,7 @@
 
         <View
             android:id="@+id/dividerType1"
-            android:layout_width="8dp"
+            android:layout_width="6dp"
             android:layout_height="match_parent"
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
@@ -226,7 +226,7 @@
         <!-- Customized Divider -->
         <View
             android:id="@+id/dividerType2"
-            android:layout_width="8dp"
+            android:layout_width="6dp"
             android:layout_height="match_parent"
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
@@ -245,7 +245,7 @@
         <!-- Customized Divider -->
         <View
             android:id="@+id/dividerType3"
-            android:layout_width="8dp"
+            android:layout_width="6dp"
             android:layout_height="match_parent"
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
@@ -264,7 +264,7 @@
         <!-- Customized Divider -->
         <View
             android:id="@+id/dividerType4"
-            android:layout_width="8dp"
+            android:layout_width="6dp"
             android:layout_height="match_parent"
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
@@ -304,7 +304,7 @@
 
         <View
             android:id="@+id/dividerType5"
-            android:layout_width="8dp"
+            android:layout_width="6dp"
             android:layout_height="match_parent"
             android:layout_marginStart="4dp"
             android:background="@drawable/custom_divider_style" />

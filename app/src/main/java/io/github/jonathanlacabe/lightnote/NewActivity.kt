@@ -4,18 +4,26 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import io.github.jonathanlacabe.lightnote.databinding.ActivityNewBinding
+import org.billthefarmer.mididriver.MidiDriver
 
 class NewActivity : ComponentActivity() {
 
     private lateinit var binding: ActivityNewBinding
     private var currentFileName: String = "default" //Value will only appear in exceptions.
     private var isPlaying = false // Initialize isPlaying to track playback state
+
+    // Declare MidiDriver and a ByteArray for the MIDI file data
+    private lateinit var midiDriver: MidiDriver
+    private var midiData: ByteArray? = null
+
+    private var playbackThread: Thread? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +32,11 @@ class NewActivity : ComponentActivity() {
         setContentView(binding.root)
 
         updateFileNameTextView(currentFileName)
+
+        midiDriver = MidiDriver.getInstance() // Initialize the MIDI driver
+        midiDriver.start() // Start the MIDI driver
+
+        Log.d("MIDI_DRIVER", "MIDI Driver initialized")
 
         //upper space TextView show a toast with the full name on hold-down
         binding.fileNameTextView.setOnLongClickListener {
@@ -40,29 +53,32 @@ class NewActivity : ComponentActivity() {
         //Help button
         binding.helpButton.setOnClickListener { showHelpMenu() }
 
-        // Rewind button functionality
-        binding.rewindButton.setOnClickListener {
-            if (isPlaying) {
-                isPlaying = false
-                // Logic to rewind track when implemented
+        // Play button functionality
+        binding.playButton.setOnClickListener {
+            if (!isPlaying && midiData != null) {
+                isPlaying = true
+                playMidiData() // Call playMidiData to start playback
             }
         }
 
         // Pause button functionality
         binding.pauseButton.setOnClickListener {
             if (isPlaying) {
-                isPlaying = false // Update state to indicate playback is paused
-                // Logic to pause track when implemented
+                isPlaying = false // Stop playback, will pause since thread checks isPlaying
             }
         }
 
-        // Play button functionality
-        binding.playButton.setOnClickListener {
-            if (!isPlaying) {
-                isPlaying = true // Update state to indicate playback has started
-                // Logic to play track when implemented
+        // Rewind button functionality
+        binding.rewindButton.setOnClickListener {
+            if (isPlaying) {
+                isPlaying = false // Stop current playback
+            }
+            // Restart playback from the beginning
+            if (midiData != null) {
+                playMidiData()
             }
         }
+
 
     }
 
@@ -185,6 +201,12 @@ class NewActivity : ComponentActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_OPEN_MIDI && resultCode == RESULT_OK) {
             data?.data?.let { uri ->
+
+                //scrapes midi info
+                contentResolver.openInputStream(uri)?.use { inputStream ->
+                    midiData = inputStream.readBytes() // Load MIDI file into midiData
+                }
+
                 var fileName: String? = null
 
                 // 1. Attempt to retrieve display name using ContentResolver
@@ -209,6 +231,51 @@ class NewActivity : ComponentActivity() {
     // Helper function to get column name more reliably
     private fun Cursor.getColumnIndexOpenableColumnName(columnName: String): Int {
         return this.getColumnIndex(columnName).takeIf { it != -1 } ?: this.getColumnIndex("name")
+    }
+
+    private fun playMidiData() {
+        if (midiData == null) {
+            Log.e("MIDI_DRIVER", "No MIDI data loaded")
+            return
+        }
+        playbackThread = Thread {
+            midiData?.let { data ->
+                val midiParser = MidiParser(data)
+                val events = try {
+                    midiParser.parse() // Parse MIDI events safely
+                } catch (e: Exception) {
+                    Log.e("MIDI_DRIVER", "Error parsing MIDI data: ${e.message}")
+                    return@Thread
+                }
+
+                isPlaying = true
+                for (event in events) {
+                    if (!isPlaying) break // Stop if paused
+
+                    try {
+                        midiDriver.write(event.bytes)
+                        Log.d("MIDI_DRIVER", "MIDI event sent successfully.")
+                    } catch (e: Exception) {
+                        Log.e("MIDI_DRIVER", "Error sending MIDI event: ${e.message}")
+                    }
+
+                    // Use `event.delay` with error handling
+                    try {
+                        Thread.sleep(event.delay)
+                    } catch (e: InterruptedException) {
+                        Log.e("MIDI_DRIVER", "Playback interrupted: ${e.message}")
+                    }
+                }
+                isPlaying = false
+            }
+        }
+        playbackThread?.start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        midiDriver.stop()
+        midiDriver.stop() // Stop the MIDI driver
     }
 
 
