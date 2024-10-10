@@ -1,0 +1,37 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Outer shadow (darker border) -->
+    <item>
+        <shape>
+            <solid android:color="#1e1f21" /> <!-- Darker outer border -->
+            <size android:width="5dp" android:height="5dp" />
+        </shape>
+    </item>
+
+    <!-- Inner shadow (slightly lighter) to enhance the indent effect -->
+    <item android:left="1dp" android:right="1dp" android:top="1dp" android:bottom="1dp">
+        <shape>
+            <gradient
+                android:startColor="#333436"
+            android:centerColor="#404245"
+            android:endColor="#333436"
+            android:angle="0"
+            />
+            <size android:width="3dp" android:height="5dp" />
+        </shape>
+    </item>
+
+    <!-- Central highlight for an inset look -->
+    <item android:left="2dp" android:right="2dp" android:top="1dp" android:bottom="1dp">
+        <shape>
+            <gradient
+                android:startColor="#5A5B5D"
+            android:centerColor="#4A4B4D"
+            android:endColor="#5A5B5D"
+            android:angle="0"
+            />
+            <size android:width="2dp" android:height="5dp" />
+        </shape>
+    </item>
+
+</layer-list>

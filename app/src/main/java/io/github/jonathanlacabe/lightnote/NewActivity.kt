@@ -4,9 +4,6 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -18,6 +15,7 @@ class NewActivity : ComponentActivity() {
 
     private lateinit var binding: ActivityNewBinding
     private var currentFileName: String = "default" //Value will only appear in exceptions.
+    private var isPlaying = false // Initialize isPlaying to track playback state
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,26 +42,26 @@ class NewActivity : ComponentActivity() {
 
         // Rewind button functionality
         binding.rewindButton.setOnClickListener {
-            if (!isPlaying) {
-                Toast.makeText(this, "Rewind track", Toast.LENGTH_SHORT).show()
+            if (isPlaying) {
+                isPlaying = false
+                // Logic to rewind track when implemented
             }
-            // Logic to rewind track when implemented
         }
 
-// Pause button functionality
+        // Pause button functionality
         binding.pauseButton.setOnClickListener {
-            if (!isPlaying) {
-                Toast.makeText(this, "Pause track", Toast.LENGTH_SHORT).show()
+            if (isPlaying) {
+                isPlaying = false // Update state to indicate playback is paused
+                // Logic to pause track when implemented
             }
-            // Logic to pause track when implemented
         }
 
-// Play button functionality
+        // Play button functionality
         binding.playButton.setOnClickListener {
             if (!isPlaying) {
-                Toast.makeText(this, "Play track", Toast.LENGTH_SHORT).show()
+                isPlaying = true // Update state to indicate playback has started
+                // Logic to play track when implemented
             }
-            // Logic to play track when implemented
         }
 
     }

@@ -135,8 +135,8 @@
         android:orientation="horizontal"
         android:background="#2A2B2D"
         android:gravity="center_vertical"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
+        android:paddingStart="11dp"
+        android:paddingEnd="11dp"
         app:layout_constraintTop_toBottomOf="@id/topButtonsLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -147,7 +147,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_rewind"
-        android:contentDescription="@string/rewind_button"
+            android:contentDescription="@string/rewind_button"
             app:tint="#FFFFFF" />
 
         <!-- Divider 5 -->
@@ -156,9 +156,7 @@
             android:layout_width="2dp"
             android:layout_height="match_parent"
             android:background="#5A5B5D"
-            app:layout_constraintStart_toStartOf="@id/rewindButton"
-            android:layout_marginStart="3dp"
-            />
+            android:layout_marginStart="4dp" />
 
         <!-- Pause Button -->
         <ImageView
@@ -166,8 +164,8 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_pause"
-        android:contentDescription="@string/pause_button"
-            android:layout_marginStart="3dp"
+            android:contentDescription="@string/pause_button"
+            android:layout_marginStart="4dp"
             app:tint="#FFFFFF" />
 
         <!-- Divider 6 -->
@@ -176,9 +174,7 @@
             android:layout_width="2dp"
             android:layout_height="match_parent"
             android:background="#5A5B5D"
-            app:layout_constraintStart_toStartOf="@id/pauseButton"
-            android:layout_marginStart="4dp"
-            />
+            android:layout_marginStart="4dp" />
 
         <!-- Play Button -->
         <ImageView
@@ -186,19 +182,17 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_play"
-        android:contentDescription="@string/play_button"
-            android:layout_marginStart="3dp"
+            android:contentDescription="@string/play_button"
+            android:layout_marginStart="4dp"
             app:tint="#FFFFFF" />
 
         <!-- Divider 7 -->
         <View
             android:id="@+id/divider7"
-            android:layout_width="4dp"
+            android:layout_width="2dp"
             android:layout_height="match_parent"
             android:background="#5A5B5D"
-            app:layout_constraintStart_toStartOf="@id/playButton"
-            android:layout_marginStart="4dp"
-            />
+            android:layout_marginStart="4dp" />
 
         <!-- Track Name Display -->
         <TextView
@@ -207,14 +201,16 @@
             android:layout_height="wrap_content"
             android:text="Track Name"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:fontFamily="@font/quadriga_bq"
             android:layout_marginStart="4dp"/>
 
-        <!-- Divider -->
         <View
-            android:layout_width="12dp"
-            android:layout_height="match_parent" />
+            android:id="@+id/dividerType1"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/custom_divider_style"
+            android:layout_marginStart="4dp" />
 
         <!-- Type Display -->
         <TextView
@@ -223,28 +219,36 @@
             android:layout_height="wrap_content"
             android:text="Type"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:fontFamily="@font/quadriga_bq" />
+            android:textSize="25sp"
+            android:fontFamily="@font/quadriga_bq"
+            android:layout_marginStart="4dp"/>
 
-        <!-- Divider -->
+        <!-- Customized Divider -->
         <View
-            android:layout_width="12dp"
-            android:layout_height="match_parent" />
+            android:id="@+id/dividerType2"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/custom_divider_style"
+            android:layout_marginStart="4dp" />
 
         <!-- Channel Display -->
         <TextView
             android:id="@+id/channel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Channel"
+            android:text="10"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:fontFamily="@font/quadriga_bq" />
+            android:textSize="30sp"
+            android:fontFamily="@font/quadriga_bq"
+            android:layout_marginStart="4dp"/>
 
-        <!-- Divider -->
+        <!-- Customized Divider -->
         <View
-            android:layout_width="12dp"
-            android:layout_height="match_parent" />
+            android:id="@+id/dividerType3"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/custom_divider_style"
+            android:layout_marginStart="4dp" />
 
         <!-- Instrument Display -->
         <TextView
@@ -253,40 +257,89 @@
             android:layout_height="wrap_content"
             android:text="Instrument"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:fontFamily="@font/quadriga_bq" />
+            android:textSize="25sp"
+            android:fontFamily="@font/quadriga_bq"
+            android:layout_marginStart="4dp"/>
 
-        <!-- Divider -->
+        <!-- Customized Divider -->
         <View
-            android:layout_width="12dp"
-            android:layout_height="match_parent" />
+            android:id="@+id/dividerType4"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/custom_divider_style"
+            android:layout_marginStart="4dp" />
 
-        <!-- Time Display -->
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="wrap_content"
+        <!-- Time Display Layout -->
+        <LinearLayout
+            android:layout_width="55dp"
             android:layout_height="wrap_content"
-            android:text="Time"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:fontFamily="@font/quadriga_bq" />
+            android:layout_marginStart="4dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <!-- Divider -->
+            <!-- Time Label -->
+            <TextView
+                android:id="@+id/timeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/quadriga_bq"
+                android:text="Time"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
+
+            <!-- Actual Time Display (to be coded later) -->
+            <TextView
+                android:id="@+id/timeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/quadriga_bq"
+                android:text="00:00"
+                android:textColor="#FFFFFF"
+                android:textSize="21sp" />
+        </LinearLayout>
+
+        <!-- Customized Divider -->
+
+        <!-- Duration Display Layout -->
+
         <View
-            android:layout_width="12dp"
-            android:layout_height="match_parent" />
+            android:id="@+id/dividerType5"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/custom_divider_style" />
 
-        <!-- Duration Display -->
-        <TextView
-            android:id="@+id/timeDuration"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="82dp"
             android:layout_height="wrap_content"
-            android:text="Duration"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:fontFamily="@font/quadriga_bq" />
+            android:layout_marginStart="4dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <!-- Duration Label -->
+            <TextView
+                android:id="@+id/durationLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/quadriga_bq"
+                android:text="Duration"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
+
+            <!-- Actual Duration Display (to be coded later) -->
+            <TextView
+                android:id="@+id/durationValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/quadriga_bq"
+                android:text="03:45:01"
+                android:textColor="#FFFFFF"
+                android:textSize="21sp" />
+        </LinearLayout>
+
 
     </LinearLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
