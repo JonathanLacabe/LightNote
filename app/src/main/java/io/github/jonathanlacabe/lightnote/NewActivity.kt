@@ -234,6 +234,9 @@ class NewActivity : ComponentActivity() {
     }
 
     private fun playMidiData() {
+        // Set default instrument (e.g., Acoustic Grand Piano) for channel 0
+        //midiDriver.write(byteArrayOf(0xC0.toByte(), 0x00)) // Program Change to Acoustic Grand Piano
+
         if (midiData == null) {
             Log.e("MIDI_DRIVER", "No MIDI data loaded")
             return
@@ -241,30 +244,20 @@ class NewActivity : ComponentActivity() {
         playbackThread = Thread {
             midiData?.let { data ->
                 val midiParser = MidiParser(data)
-                val events = try {
-                    midiParser.parse() // Parse MIDI events safely
-                } catch (e: Exception) {
-                    Log.e("MIDI_DRIVER", "Error parsing MIDI data: ${e.message}")
-                    return@Thread
-                }
+                val events = midiParser.parse()
 
                 isPlaying = true
                 for (event in events) {
-                    if (!isPlaying) break // Stop if paused
+                    if (!isPlaying) break
 
                     try {
                         midiDriver.write(event.bytes)
-                        Log.d("MIDI_DRIVER", "MIDI event sent successfully.")
+                        Log.d("MIDI_DRIVER", "MIDI event sent: ${event.bytes.joinToString()}")
                     } catch (e: Exception) {
                         Log.e("MIDI_DRIVER", "Error sending MIDI event: ${e.message}")
                     }
 
-                    // Use `event.delay` with error handling
-                    try {
-                        Thread.sleep(event.delay)
-                    } catch (e: InterruptedException) {
-                        Log.e("MIDI_DRIVER", "Playback interrupted: ${e.message}")
-                    }
+                    Thread.sleep(event.delay) // Respect the timing between events
                 }
                 isPlaying = false
             }
