@@ -18,12 +18,8 @@ class NewActivity : ComponentActivity() {
     private lateinit var binding: ActivityNewBinding
     private var currentFileName: String = "default" //Value will only appear in exceptions.
     private var isPlaying = false // Initialize isPlaying to track playback state
-
-    // Declare MidiDriver and a ByteArray for the MIDI file data
-    private lateinit var midiDriver: MidiDriver
-    private var midiData: ByteArray? = null
-
-    private var playbackThread: Thread? = null
+    private lateinit var midiPlaybackHandler: MidiPlaybackHandler
+    private var midiFileUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +29,7 @@ class NewActivity : ComponentActivity() {
 
         updateFileNameTextView(currentFileName)
 
-        midiDriver = MidiDriver.getInstance() // Initialize the MIDI driver
-        midiDriver.start() // Start the MIDI driver
+        midiPlaybackHandler = MidiPlaybackHandler(contentResolver)
 
         Log.d("MIDI_DRIVER", "MIDI Driver initialized")
 
@@ -55,9 +50,11 @@ class NewActivity : ComponentActivity() {
 
         // Play button functionality
         binding.playButton.setOnClickListener {
-            if (!isPlaying && midiData != null) {
+            if (!isPlaying) {
                 isPlaying = true
-                playMidiData() // Call playMidiData to start playback
+                midiFileUri?.let { uri ->
+                    midiPlaybackHandler.loadAndPlayMidiFile(uri)
+                }
             }
         }
 
@@ -65,6 +62,7 @@ class NewActivity : ComponentActivity() {
         binding.pauseButton.setOnClickListener {
             if (isPlaying) {
                 isPlaying = false // Stop playback, will pause since thread checks isPlaying
+                midiPlaybackHandler.stopPlayback()
             }
         }
 
@@ -73,9 +71,8 @@ class NewActivity : ComponentActivity() {
             if (isPlaying) {
                 isPlaying = false // Stop current playback
             }
-            // Restart playback from the beginning
-            if (midiData != null) {
-                playMidiData()
+            midiFileUri?.let { uri ->
+                midiPlaybackHandler.loadAndPlayMidiFile(uri)
             }
         }
 
@@ -201,11 +198,8 @@ class NewActivity : ComponentActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_OPEN_MIDI && resultCode == RESULT_OK) {
             data?.data?.let { uri ->
-
-                //scrapes midi info
-                contentResolver.openInputStream(uri)?.use { inputStream ->
-                    midiData = inputStream.readBytes() // Load MIDI file into midiData
-                }
+                // Assign selected file URI to midiFileUri
+                midiFileUri = uri
 
                 var fileName: String? = null
 
@@ -228,48 +222,18 @@ class NewActivity : ComponentActivity() {
     }
 
 
+
     // Helper function to get column name more reliably
     private fun Cursor.getColumnIndexOpenableColumnName(columnName: String): Int {
         return this.getColumnIndex(columnName).takeIf { it != -1 } ?: this.getColumnIndex("name")
     }
 
-    private fun playMidiData() {
-        // Set default instrument (e.g., Acoustic Grand Piano) for channel 0
-        //midiDriver.write(byteArrayOf(0xC0.toByte(), 0x00)) // Program Change to Acoustic Grand Piano
-
-        if (midiData == null) {
-            Log.e("MIDI_DRIVER", "No MIDI data loaded")
-            return
-        }
-        playbackThread = Thread {
-            midiData?.let { data ->
-                val midiParser = MidiParser(data)
-                val events = midiParser.parse()
-
-                isPlaying = true
-                for (event in events) {
-                    if (!isPlaying) break
-
-                    try {
-                        midiDriver.write(event.bytes)
-                        Log.d("MIDI_DRIVER", "MIDI event sent: ${event.bytes.joinToString()}")
-                    } catch (e: Exception) {
-                        Log.e("MIDI_DRIVER", "Error sending MIDI event: ${e.message}")
-                    }
-
-                    Thread.sleep(event.delay) // Respect the timing between events
-                }
-                isPlaying = false
-            }
-        }
-        playbackThread?.start()
-    }
 
     override fun onDestroy() {
         super.onDestroy()
-        midiDriver.stop()
-        midiDriver.stop() // Stop the MIDI driver
+        midiPlaybackHandler.stopPlayback()
     }
+
 
 
     private fun startTutorialSequence() {
