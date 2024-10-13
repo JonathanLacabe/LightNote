@@ -7,6 +7,7 @@ import org.billthefarmer.mididriver.MidiDriver
 import java.io.InputStream
 import jp.kshoji.javax.sound.midi.MidiSystem
 import jp.kshoji.javax.sound.midi.Sequence
+import jp.kshoji.javax.sound.midi.MetaMessage
 
 class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
 
@@ -30,14 +31,40 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                 val sequence: Sequence = MidiSystem.getSequence(inputStream)
                 isPlaying = true
 
-                for (track in sequence.tracks) {
-                    for (event in track.ticks) {
-                        if (!isPlaying) break
-                        val message = event.message
-                        midiDriver.write(message) // Send the event to MidiDriver
+                var tempo = 500000 // Default microseconds per quarter note for 120 BPM
+                val ticksPerQuarterNote = sequence.resolution.toDouble()
+                val microsecondsPerTickFactor = tempo / ticksPerQuarterNote
 
-                        // Timing Control
-                        val delayMillis = event.tickLength * 2 // Adjust as necessary
+                for (track in sequence.tracks) {
+                    var lastEventTick = 0L
+
+                    for (i in 0 until track.size()) {
+                        if (!isPlaying) break
+
+                        val event = track.get(i)
+                        val tickDelta = event.tick - lastEventTick
+                        lastEventTick = event.tick
+
+                        // Check for tempo change (Meta message with type 0x51)
+                        if (event.message is MetaMessage) {
+                            val metaMessage = event.message as MetaMessage
+                            if (metaMessage.type == 0x51 && metaMessage.data.size >= 3) { // 0x51 indicates a tempo change event
+                                tempo = ((metaMessage.data[0].toInt() and 0xFF) shl 16) or
+                                        ((metaMessage.data[1].toInt() and 0xFF) shl 8) or
+                                        (metaMessage.data[2].toInt() and 0xFF)
+                                Log.d("MIDI_PLAYER", "Tempo change detected: $tempo microseconds per quarter note")
+                            }
+                        }
+
+                        val message = event.message.message // MIDI event message bytes
+                        midiDriver.write(message) // Send the event to MidiDriver
+                        if (message != null) {
+                            Log.d("MIDI_PLAYER", "MIDI event sent: ${message.joinToString()}")
+                        }
+
+                        // Calculate accurate delay using the current tempo
+                        val microsecondsPerTick = tempo / ticksPerQuarterNote
+                        val delayMillis = (tickDelta * microsecondsPerTick / 1000).toLong()
                         Thread.sleep(delayMillis)
                     }
                 }
@@ -50,6 +77,8 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
         }
         playbackThread?.start()
     }
+
+
 
     fun stopPlayback() {
         isPlaying = false
