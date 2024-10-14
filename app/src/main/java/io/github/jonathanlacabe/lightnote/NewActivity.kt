@@ -53,7 +53,7 @@ class NewActivity : ComponentActivity() {
             if (!isPlaying) {
                 isPlaying = true
                 midiFileUri?.let { uri ->
-                    midiPlaybackHandler.loadAndPlayMidiFile(uri)
+                    midiPlaybackHandler.resumePlayback(uri) // Resume from last paused tick or start if not paused
                 }
             }
         }
@@ -61,21 +61,19 @@ class NewActivity : ComponentActivity() {
         // Pause button functionality
         binding.pauseButton.setOnClickListener {
             if (isPlaying) {
-                isPlaying = false // Stop playback, will pause since thread checks isPlaying
-                midiPlaybackHandler.stopPlayback()
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
             }
         }
 
         // Rewind button functionality
         binding.rewindButton.setOnClickListener {
-            if (isPlaying) {
-                isPlaying = false // Stop current playback
-            }
+            isPlaying = true  // Set to playing as rewind restarts playback
             midiFileUri?.let { uri ->
-                midiPlaybackHandler.loadAndPlayMidiFile(uri)
+                midiPlaybackHandler.stopPlayback() // Stop current playback and reset
+                midiPlaybackHandler.loadAndPlayMidiFile(uri) // Restart from the beginning
             }
         }
-
 
     }
 
