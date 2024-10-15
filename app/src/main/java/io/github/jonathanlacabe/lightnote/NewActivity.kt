@@ -75,6 +75,39 @@ class NewActivity : ComponentActivity() {
             }
         }
 
+        // Panic button functionality
+        binding.panicButton.setOnClickListener {
+            Log.d("PanicButton", "Panic button clicked, calling rewind twice with delay")
+
+            // First call to rewind
+            binding.rewindButton.performClick()
+            Toast.makeText(this, "Panic Button: Errors fixed!", Toast.LENGTH_SHORT).show()
+
+            // Second call to rewind after 0.5 seconds - otherwise, it itself will cause errors
+            binding.rewindButton.postDelayed({
+                binding.rewindButton.performClick()
+            }, 300)
+        }
+
+        // Duration button long-click to show toast and pause
+        binding.durationValue.setOnLongClickListener {
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
+            Toast.makeText(this, "Time Duration", Toast.LENGTH_SHORT).show()
+            true
+        }
+
+        // Set up the time update callback
+        midiPlaybackHandler.setOnTimeUpdateCallback { elapsedMillis ->
+            val elapsedSeconds = (elapsedMillis / 1000).toInt()
+            val elapsedTimeFormatted = String.format("%02d:%02d:%02d", elapsedSeconds / 3600, (elapsedSeconds % 3600) / 60, elapsedSeconds % 60)
+            runOnUiThread {
+                binding.timeValue.text = elapsedTimeFormatted
+            }
+        }
+
     }
 
     private fun updateFileNameTextView(fileName: String) {
@@ -198,6 +231,10 @@ class NewActivity : ComponentActivity() {
             data?.data?.let { uri ->
                 // Assign selected file URI to midiFileUri
                 midiFileUri = uri
+                //Find midi duration
+                midiPlaybackHandler.getMidiDuration(uri)?.let { durationMillis ->
+                    binding.durationValue.text = formatDuration(durationMillis)
+                }
 
                 var fileName: String? = null
 
@@ -219,11 +256,12 @@ class NewActivity : ComponentActivity() {
         }
     }
 
-
-
-    // Helper function to get column name more reliably
-    private fun Cursor.getColumnIndexOpenableColumnName(columnName: String): Int {
-        return this.getColumnIndex(columnName).takeIf { it != -1 } ?: this.getColumnIndex("name")
+    private fun formatDuration(durationMillis: Long): String {
+        val totalSeconds = (durationMillis + 500) / 1000 // Round to the nearest second
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 
 

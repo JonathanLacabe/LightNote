@@ -4,4 +4,5 @@
     <string name="rewind_button" />
     <string name="pause_button">Pause</string>
     <string name="play_button">Play</string>
+    <string name="panic_button">Panic!</string>
 </resources>

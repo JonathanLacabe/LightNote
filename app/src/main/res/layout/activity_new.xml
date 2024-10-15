@@ -203,8 +203,10 @@
             android:textColor="#FFFFFF"
             android:textSize="25sp"
             android:fontFamily="@font/quadriga_bq"
-            android:layout_marginStart="4dp"/>
+            android:layout_marginStart="4dp"
+            android:gravity="center" />
 
+        <!-- Fancy Divider -->
         <View
             android:id="@+id/dividerType1"
             android:layout_width="6dp"
@@ -212,18 +214,21 @@
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
 
-        <!-- Type Display -->
+        <!-- Type Display with Weight and Centered Text -->
         <TextView
             android:id="@+id/type"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Type"
             android:textColor="#FFFFFF"
             android:textSize="25sp"
             android:fontFamily="@font/quadriga_bq"
-            android:layout_marginStart="4dp"/>
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:maxWidth="150dp"
+            android:gravity="center" />
 
-        <!-- Customized Divider -->
+        <!-- Fancy Divider -->
         <View
             android:id="@+id/dividerType2"
             android:layout_width="6dp"
@@ -240,9 +245,10 @@
             android:textColor="#FFFFFF"
             android:textSize="30sp"
             android:fontFamily="@font/quadriga_bq"
-            android:layout_marginStart="4dp"/>
+            android:layout_marginStart="4dp"
+            android:gravity="center" />
 
-        <!-- Customized Divider -->
+        <!-- Fancy Divider -->
         <View
             android:id="@+id/dividerType3"
             android:layout_width="6dp"
@@ -250,18 +256,19 @@
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
 
-        <!-- Instrument Display -->
+        <!-- Instrument Display, slightly larger and centered -->
         <TextView
             android:id="@+id/instrument"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Instrument"
             android:textColor="#FFFFFF"
-            android:textSize="25sp"
+            android:textSize="26sp"
             android:fontFamily="@font/quadriga_bq"
-            android:layout_marginStart="4dp"/>
+            android:layout_marginStart="4dp"
+            android:gravity="center" />
 
-        <!-- Customized Divider -->
+        <!-- Fancy Divider -->
         <View
             android:id="@+id/dividerType4"
             android:layout_width="6dp"
@@ -269,11 +276,11 @@
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
 
-        <!-- Time Display Layout -->
+        <!-- Time Display Layout, centered horizontally -->
         <LinearLayout
-            android:layout_width="55dp"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="2dp"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -285,34 +292,34 @@
                 android:fontFamily="@font/quadriga_bq"
                 android:text="Time"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:gravity="center" />
 
-            <!-- Actual Time Display (to be coded later) -->
+            <!-- Time Value Display -->
             <TextView
                 android:id="@+id/timeValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/quadriga_bq"
-                android:text="00:00"
+                android:text="00:00:00"
                 android:textColor="#FFFFFF"
-                android:textSize="21sp" />
+                android:textSize="21sp"
+                android:gravity="center" />
         </LinearLayout>
 
-        <!-- Customized Divider -->
-
-        <!-- Duration Display Layout -->
-
+        <!-- Fancy Divider -->
         <View
             android:id="@+id/dividerType5"
             android:layout_width="6dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="2dp"
             android:background="@drawable/custom_divider_style" />
 
+        <!-- Duration Display Layout, centered horizontally -->
         <LinearLayout
             android:layout_width="82dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="2dp"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -324,21 +331,42 @@
                 android:fontFamily="@font/quadriga_bq"
                 android:text="Duration"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:gravity="center" />
 
-            <!-- Actual Duration Display (to be coded later) -->
+            <!-- Duration Value Display -->
             <TextView
                 android:id="@+id/durationValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/quadriga_bq"
-                android:text="03:45:01"
+                android:text="00:00:00"
                 android:textColor="#FFFFFF"
-                android:textSize="21sp" />
+                android:textSize="21sp"
+                android:gravity="center" />
         </LinearLayout>
 
+        <!-- Fancy Divider -->
+        <View
+            android:id="@+id/dividerFinal"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:background="@drawable/custom_divider_style"/>
+
+        <!-- Panic Button -->
+        <ImageView
+            android:id="@+id/panicButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_panic"
+            android:contentDescription="@string/panic_button"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="0dp"
+            app:tint="#FFFFFF" />
 
     </LinearLayout>
+
 
 
 

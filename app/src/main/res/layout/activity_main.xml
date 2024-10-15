@@ -23,18 +23,6 @@
     app:layout_constraintTop_toTopOf="parent"
     android:scaleType="fitCenter" />
 
-
-    <!-- Glow applied over the logo -->
-    <ImageView
-        android:id="@+id/logoGlow"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:src="@drawable/glow_effect"
-        app:layout_constraintTop_toTopOf="@id/appLogo"
-        app:layout_constraintEnd_toEndOf="@id/appLogo"
-        android:layout_marginTop="50dp"
-    android:layout_marginEnd="20dp" />
-
     <!-- New File Button with Glow -->
 <Button
 android:id="@+id/newButton"
