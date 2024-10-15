@@ -108,6 +108,29 @@ class NewActivity : ComponentActivity() {
             }
         }
 
+        // Ensure instrument text always has marquee enabled - DISABLED due to it jerking back into position with every event due to threading issues
+        // binding.instrument.isSelected = true
+
+        // Set up instrument update callback
+        midiPlaybackHandler.setOnInstrumentUpdateCallback { instrumentName ->
+            runOnUiThread {
+                // Set text only if it is different to prevent resetting the marquee
+                if (binding.instrument.text != instrumentName) {
+                    binding.instrument.text = instrumentName
+                }
+            }
+        }
+
+        // Instrument button long-click to show toast and pause
+        binding.instrument.setOnLongClickListener {
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
+            Toast.makeText(this, binding.instrument.text, Toast.LENGTH_SHORT).show()
+            true
+        }
+
     }
 
     private fun updateFileNameTextView(fileName: String) {

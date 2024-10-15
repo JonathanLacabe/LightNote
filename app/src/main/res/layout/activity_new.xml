@@ -259,14 +259,20 @@
         <!-- Instrument Display, slightly larger and centered -->
         <TextView
             android:id="@+id/instrument"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Instrument"
             android:textColor="#FFFFFF"
-            android:textSize="26sp"
+            android:textSize="25sp"
             android:fontFamily="@font/quadriga_bq"
             android:layout_marginStart="4dp"
-            android:gravity="center" />
+            android:layout_weight="1"
+            android:maxWidth="150dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
 
         <!-- Fancy Divider -->
         <View
@@ -274,11 +280,11 @@
             android:layout_width="6dp"
             android:layout_height="match_parent"
             android:background="@drawable/custom_divider_style"
-            android:layout_marginStart="4dp" />
+            android:layout_marginStart="2dp" />
 
         <!-- Time Display Layout, centered horizontally -->
         <LinearLayout
-            android:layout_width="70dp"
+            android:layout_width="73dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:gravity="center_horizontal"
