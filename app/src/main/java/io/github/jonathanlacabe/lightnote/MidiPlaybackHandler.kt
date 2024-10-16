@@ -162,45 +162,60 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
     // Callback function to update elapsed time on the UI
     private var onTimeUpdate: ((Long) -> Unit)? = null
 
+    // New callback for channel updates
+    private var onChannelUpdate: ((Int) -> Unit)? = null
+
+    // Function to set the channel update callback
+    fun setOnChannelUpdateCallback(callback: (Int) -> Unit) {
+        onChannelUpdate = callback
+    }
+
     // Function to load and play a MIDI file and retrieve instrument info
     fun loadAndPlayMidiFile(uri: Uri, startTick: Long = 0L) {
         stopPlayback() // Stop any ongoing playback
         contentResolver.openInputStream(uri)?.use { inputStream ->
             midiDriver.start()
-            parseInstrument(contentResolver.openInputStream(uri)!!) // Create a new stream for parsing
-            playMidiData(contentResolver.openInputStream(uri)!!, startTick) // And a separate one for playback
+            parseInstrumentAndChannel(contentResolver.openInputStream(uri)!!) // Call new function
+            playMidiData(contentResolver.openInputStream(uri)!!, startTick)
         } ?: Log.e("MIDI_PLAYER", "Failed to load MIDI file from URI")
     }
 
-
-    // Instrument parsing function
-    private fun parseInstrument(inputStream: InputStream) {
+    // Modify the parseInstrument function to retrieve the channel number
+    private fun parseInstrumentAndChannel(inputStream: InputStream) {
         try {
             val sequence = MidiSystem.getSequence(inputStream)
             val instruments = mutableSetOf<String>()
+            var channel: Int? = null
 
             for (track in sequence.tracks) {
                 for (i in 0 until track.size()) {
                     val event = track.get(i)
                     val message = event.message
 
-                    // Check for Program Change message type and handle potential null message safely
-                    if (message != null && message.status in 0xC0..0xCF && (message.message?.size
-                            ?: 0) > 1
-                    ) {
+                    // Extract instrument information
+                    if (message != null && message.status in 0xC0..0xCF && (message.message?.size ?: 0) > 1) {
                         val instrumentIndex = message.message!![1].toInt() and 0x7F
                         if (instrumentIndex in gmInstruments.indices) {
                             instruments.add(gmInstruments[instrumentIndex])
                         }
                     }
+
+                    // Extract channel information (only need first occurrence)
+                    if (channel == null && message != null && message.message?.isNotEmpty() == true) {
+                        val statusByte = message.message!![0].toInt()
+                        if (statusByte in 0x80..0xEF) { // Only for channel-specific messages
+                            channel = (statusByte and 0x0F) + 1
+                        }
+                    }
                 }
             }
 
-            // Set instrument or default to "Unknown Instrument"
+            // Update the UI with instrument and channel information
             onInstrumentUpdate?.invoke(instruments.firstOrNull() ?: "Unknown Instrument")
+            onChannelUpdate?.invoke(channel ?: 1) // Default to channel 1 if not found
 
         } catch (e: Exception) {
-            Log.e("MIDI_PLAYER", "Error parsing instrument: ${e.message}")
+            Log.e("MIDI_PLAYER", "Error parsing instrument and channel: ${e.message}")
         }
     }
 

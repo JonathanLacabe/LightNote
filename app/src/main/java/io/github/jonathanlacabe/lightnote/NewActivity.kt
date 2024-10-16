@@ -131,6 +131,24 @@ class NewActivity : ComponentActivity() {
             true
         }
 
+        // Set up the channel update callback
+        midiPlaybackHandler.setOnChannelUpdateCallback { channelNumber ->
+            runOnUiThread {
+                binding.channel.text = channelNumber.toString()
+            }
+        }
+
+        // Channel button long-click to show toast with the channel number
+        binding.channel.setOnLongClickListener {
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
+            Toast.makeText(this, "Channel: ${binding.channel.text}", Toast.LENGTH_SHORT).show()
+            true
+        }
+
+
     }
 
     private fun updateFileNameTextView(fileName: String) {
