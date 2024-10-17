@@ -33,6 +33,26 @@ class NewActivity : ComponentActivity() {
 
         Log.d("MIDI_DRIVER", "MIDI Driver initialized")
 
+        // Check if a MIDI file URI was passed from MainActivity
+        intent.getStringExtra("MIDI_FILE_URI")?.let { uriString ->
+            val uri = Uri.parse(uriString)
+            midiFileUri = uri
+
+            // Load the MIDI file and update the duration
+            midiPlaybackHandler.getMidiDuration(uri)?.let { durationMillis ->
+                binding.durationValue.text = formatDuration(durationMillis)
+            }
+
+            // Update the file name for the UI
+            var fileName: String? = null
+            contentResolver.query(uri, arrayOf("_display_name"), null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    fileName = cursor.getString(0)?.substringBeforeLast('.') ?: "Unknown File"
+                }
+            }
+            updateFileNameTextView(fileName ?: "Unknown File")
+        }
+
         //upper space TextView show a toast with the full name on hold-down
         binding.fileNameTextView.setOnLongClickListener {
             Toast.makeText(this, currentFileName, Toast.LENGTH_SHORT).show()
@@ -148,6 +168,28 @@ class NewActivity : ComponentActivity() {
             true
         }
 
+        binding.type.setOnLongClickListener {
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
+            Toast.makeText(this, binding.type.text, Toast.LENGTH_SHORT).show()
+            true
+        }
+
+        // Set up the type update callback
+        midiPlaybackHandler.setOnTypeUpdateCallback { trackType ->
+            runOnUiThread {
+                binding.type.text = trackType
+            }
+        }
+
+        // Set up playback completion callback
+        midiPlaybackHandler.setOnPlaybackCompleteCallback {
+            runOnUiThread {
+                binding.timeValue.text = binding.durationValue.text
+            }
+        }
 
     }
 
@@ -184,6 +226,10 @@ class NewActivity : ComponentActivity() {
         val exitOption = popupView.findViewById<TextView>(R.id.exitOption)
 
         openOption.setOnClickListener {
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
             popupWindow.dismiss()
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 type = "audio/midi"
@@ -194,6 +240,10 @@ class NewActivity : ComponentActivity() {
         }
 
         exitOption.setOnClickListener {
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
             popupWindow.dismiss()
             finish()
         }
@@ -214,7 +264,11 @@ class NewActivity : ComponentActivity() {
         // Set up "Piano Roll Editor" click behavior (appears clickable but does nothing)
         val pianoRollEditor = popupView.findViewById<TextView>(R.id.pianoRollEditor)
         pianoRollEditor.setOnClickListener {
-            // Show some visual feedback when tapped
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
+            // Show some visual feedback when tapped [v2]
             pianoRollEditor.alpha = 0.5f
             pianoRollEditor.postDelayed({ pianoRollEditor.alpha = 1f }, 100)
             popupWindow.dismiss() // Just dismiss the popup; no actual function needed
@@ -242,12 +296,20 @@ class NewActivity : ComponentActivity() {
 
         // Open tutorial sequence
         tutorialOption.setOnClickListener {
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
             popupWindow.dismiss()
             startTutorialSequence()
         }
 
         // Open GitHub documentation link
         githubOption.setOnClickListener {
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
             popupWindow.dismiss()
             val githubUri = Uri.parse("https://github.com/JonathanLacabe/LightNote/blob/master/README.md")
             val githubIntent = Intent(Intent.ACTION_VIEW, githubUri)
@@ -256,6 +318,10 @@ class NewActivity : ComponentActivity() {
 
         // Open YouTube playlist link
         youtubeOption.setOnClickListener {
+            if (isPlaying) {
+                isPlaying = false
+                midiPlaybackHandler.pausePlayback()
+            }
             popupWindow.dismiss()
             val youtubeUri = Uri.parse("https://www.youtube.com/playlist?list=PLS8kBPvyvuR9t8YuetX402X1M1pYZUqTB")
             val youtubeIntent = Intent(Intent.ACTION_VIEW, youtubeUri)
@@ -310,8 +376,6 @@ class NewActivity : ComponentActivity() {
         super.onDestroy()
         midiPlaybackHandler.stopPlayback()
     }
-
-
 
     private fun startTutorialSequence() {
         // Placeholder for tutorial sequence logic

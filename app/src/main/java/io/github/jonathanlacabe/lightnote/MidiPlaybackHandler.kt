@@ -164,7 +164,52 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
 
     // New callback for channel updates
     private var onChannelUpdate: ((Int) -> Unit)? = null
+    private var onTypeUpdate: ((String) -> Unit)? = null
 
+    // new callback for playback completion to notify the UI when playback has reached the end.
+    private var onPlaybackComplete: (() -> Unit)? = null
+
+    // Function to set the playback complete callback
+    fun setOnPlaybackCompleteCallback(callback: () -> Unit) {
+        onPlaybackComplete = callback
+    }
+
+    // Function to set the type update callback
+    fun setOnTypeUpdateCallback(callback: (String) -> Unit) {
+        onTypeUpdate = callback
+    }
+
+    // Function to determine and notify the track type
+    private fun determineTrackType(inputStream: InputStream) {
+        try {
+            val sequence = MidiSystem.getSequence(inputStream)
+            var trackType = "Instrument" // Default to Instrument type
+
+            // Check each track for MIDI events to detect type
+            for (track in sequence.tracks) {
+                for (i in 0 until track.size()) {
+                    val event = track.get(i)
+                    val message = event.message
+
+                    if (message != null && message.message?.isNotEmpty() == true) {
+                        val statusByte = message.message!![0].toInt()
+                        val channel = (statusByte and 0x0F) + 1
+
+                        if (channel == 10) {  // MIDI channel 10 is typically reserved for percussion
+                            trackType = "Rhythm"
+                            break
+                        }
+                    }
+                }
+            }
+
+            // Trigger the type callback with the determined track type
+            onTypeUpdate?.invoke(trackType)
+
+        } catch (e: Exception) {
+            Log.e("MIDI_PLAYER", "Error determining track type: ${e.message}")
+        }
+    }
     // Function to set the channel update callback
     fun setOnChannelUpdateCallback(callback: (Int) -> Unit) {
         onChannelUpdate = callback
@@ -177,6 +222,7 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
             midiDriver.start()
             parseInstrumentAndChannel(contentResolver.openInputStream(uri)!!) // Call new function
             playMidiData(contentResolver.openInputStream(uri)!!, startTick)
+            determineTrackType(inputStream)
         } ?: Log.e("MIDI_PLAYER", "Failed to load MIDI file from URI")
     }
 
@@ -185,14 +231,14 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
         try {
             val sequence = MidiSystem.getSequence(inputStream)
             val instruments = mutableSetOf<String>()
-            var channel: Int? = null
+            var detectedChannel: Int? = null
 
             for (track in sequence.tracks) {
                 for (i in 0 until track.size()) {
                     val event = track.get(i)
                     val message = event.message
 
-                    // Extract instrument information
+                    // Extract instrument information if it's a Program Change message
                     if (message != null && message.status in 0xC0..0xCF && (message.message?.size ?: 0) > 1) {
                         val instrumentIndex = message.message!![1].toInt() and 0x7F
                         if (instrumentIndex in gmInstruments.indices) {
@@ -200,11 +246,12 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                         }
                     }
 
-                    // Extract channel information (only need first occurrence)
-                    if (channel == null && message != null && message.message?.isNotEmpty() == true) {
+                    // Extract channel information from the first Note On or Program Change message
+                    if (detectedChannel == null && message != null && message.message?.isNotEmpty() == true) {
                         val statusByte = message.message!![0].toInt()
-                        if (statusByte in 0x80..0xEF) { // Only for channel-specific messages
-                            channel = (statusByte and 0x0F) + 1
+                        if ((statusByte in 0x90..0x9F) || (statusByte in 0xC0..0xCF)) {
+                            detectedChannel = (statusByte and 0x0F) + 1 // Convert 0-based to 1-based channel number
+                            Log.d("MIDI_PLAYER", "Detected channel: $detectedChannel")
                         }
                     }
                 }
@@ -212,7 +259,7 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
 
             // Update the UI with instrument and channel information
             onInstrumentUpdate?.invoke(instruments.firstOrNull() ?: "Unknown Instrument")
-            onChannelUpdate?.invoke(channel ?: 1) // Default to channel 1 if not found
+            onChannelUpdate?.invoke(detectedChannel ?: 1) // Default to channel 1 if none found
 
         } catch (e: Exception) {
             Log.e("MIDI_PLAYER", "Error parsing instrument and channel: ${e.message}")
@@ -236,10 +283,10 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
 
                 val ticksPerQuarterNote = sequence.resolution.toDouble()
                 var tempo = storedTempo
+                val totalTicks = sequence.tickLength // Total ticks of the sequence
 
                 for (track in sequence.tracks) {
                     var lastEventTick = 0L
-                    Log.d("MIDI_PLAYER", "Starting playback from tick: $startTick")
 
                     for (i in 0 until track.size()) {
                         if (!isPlaying) break
@@ -251,6 +298,14 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                         lastEventTick = event.tick
                         currentTick = event.tick
 
+                        // Check if we reached the end of the sequence
+                        if (currentTick >= totalTicks) {
+                            mainHandler.post {
+                                onPlaybackComplete?.invoke()
+                            }
+                            break
+                        }
+
                         // Handle tempo change
                         if (event.message is MetaMessage) {
                             val metaMessage = event.message as MetaMessage
@@ -259,7 +314,6 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                                         ((metaMessage.data[1].toInt() and 0xFF) shl 8) or
                                         (metaMessage.data[2].toInt() and 0xFF)
                                 storedTempo = tempo
-                                Log.d("MIDI_PLAYER", "Tempo change detected: $tempo microseconds per quarter note")
                             }
                         }
 
@@ -280,7 +334,6 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                         // Send the MIDI event to MidiDriver
                         val message = event.message.message
                         midiDriver.write(message)
-                        Log.d("MIDI_PLAYER", "Event sent at tick $currentTick")
                     }
                 }
             } catch (e: Exception) {
@@ -288,14 +341,10 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
             } finally {
                 midiDriver.stop()
                 isPlaying = false
-                Log.d("MIDI_PLAYER", "Playback stopped.")
             }
         }
         playbackThread?.start()
     }
-
-
-
 
     fun getMidiDuration(uri: Uri): Long? {
         return try {
