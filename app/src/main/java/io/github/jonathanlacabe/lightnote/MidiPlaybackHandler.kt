@@ -409,4 +409,22 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
             elapsedMillis
         }
     }
+
+    fun resetPlaybackState() {
+        stopPlayback()  // Stop playback and reset variables
+
+        // Reset variables to initial values
+        isPlaying = false
+        isPaused = false
+        currentTick = 0L
+        resumeTick = 0L
+        elapsedMillis = 0L
+        storedTempo = 500000  // Reset tempo to default (120 BPM)
+
+        // Notify UI to reset displayed information (such as instrument, channel, etc.)
+        onInstrumentUpdate?.invoke("Unknown Instrument")
+        onChannelUpdate?.invoke(1)  // Default channel to 1
+        onTypeUpdate?.invoke("Instrument")  // Default to "Instrument" type
+    }
+
 }

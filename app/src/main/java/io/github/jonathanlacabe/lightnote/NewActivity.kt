@@ -336,9 +336,13 @@ class NewActivity : ComponentActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_OPEN_MIDI && resultCode == RESULT_OK) {
             data?.data?.let { uri ->
+                // Reset playback state to clear old data and set defaults
+                midiPlaybackHandler.resetPlaybackState()
+
                 // Assign selected file URI to midiFileUri
                 midiFileUri = uri
-                //Find midi duration
+
+                // Update duration and display it
                 midiPlaybackHandler.getMidiDuration(uri)?.let { durationMillis ->
                     binding.durationValue.text = formatDuration(durationMillis)
                 }
@@ -362,6 +366,7 @@ class NewActivity : ComponentActivity() {
             }
         }
     }
+
 
     private fun formatDuration(durationMillis: Long): String {
         val totalSeconds = (durationMillis + 500) / 1000 // Round to the nearest second
