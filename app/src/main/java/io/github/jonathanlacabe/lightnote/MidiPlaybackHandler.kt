@@ -10,6 +10,8 @@ import jp.kshoji.javax.sound.midi.Sequence
 import jp.kshoji.javax.sound.midi.MetaMessage
 import android.os.Handler
 import android.os.Looper
+import kotlin.experimental.and
+import kotlin.experimental.or
 
 class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
 
@@ -166,6 +168,11 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
     private var onChannelUpdate: ((Int) -> Unit)? = null
     private var onTypeUpdate: ((String) -> Unit)? = null
 
+    data class TrackInfo(val name: String, val instrument: String, val channel: Int)
+
+    val tracks = mutableListOf<TrackInfo>()
+    private var currentTrackIndex = 0 // To keep track of the current track index
+
     // new callback for playback completion to notify the UI when playback has reached the end.
     private var onPlaybackComplete: (() -> Unit)? = null
 
@@ -230,53 +237,78 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
     private fun parseInstrumentAndChannel(inputStream: InputStream) {
         try {
             val sequence = MidiSystem.getSequence(inputStream)
-            val instruments = mutableSetOf<String>()
-            var detectedChannel: Int? = null
-            var isDrumChannel = false
+            tracks.clear() // Clear previous track data
 
-            // Loop through tracks to check each event
             for (track in sequence.tracks) {
+                var trackName: String? = null
+                var trackInstrument = "Unknown Instrument"
+                var trackChannel = 1 // Default channel
+                var isDrumChannel = false
+
+                // Analyze events in each track to retrieve track names and instruments
                 for (i in 0 until track.size()) {
                     val event = track.get(i)
                     val message = event.message
 
+                    // Detect track name using MetaMessage (0x03)
+                    if (message is MetaMessage && message.type == 0x03) {
+                        trackName = String(message.data)
+                    }
+
+                    // Detect channel and instrument
                     if (message != null && message.message?.isNotEmpty() == true) {
                         val statusByte = message.message!![0].toInt()
-                        val channel = (statusByte and 0x0F) + 1  // Convert to 1-based channel
+                        val channel = (statusByte and 0x0F) + 1
 
-                        // Check for drum channel (channel 10) and set flag
+                        // Set drum channel flag
                         if (channel == 10) {
                             isDrumChannel = true
-                            detectedChannel = 10
+                            trackChannel = 10
                         }
 
                         // Handle Program Change for instrument detection
-                        if (message.status in 0xC0..0xCF && (message.message?.size ?: 0) > 1) {
+                        if (message.status in 0xC0..0xCF && message.message!!.size > 1) {
                             val instrumentIndex = message.message!![1].toInt() and 0x7F
                             if (instrumentIndex in gmInstruments.indices) {
-                                instruments.add(gmInstruments[instrumentIndex])
+                                trackInstrument = gmInstruments[instrumentIndex]
                             }
-                            if (detectedChannel == null) {
-                                detectedChannel = channel
-                            }
+                            trackChannel = channel
                         }
                     }
                 }
+
+                // Add each track's information to the list
+                trackName = trackName ?: "Track ${tracks.size + 1}"
+                tracks.add(TrackInfo(trackName, trackInstrument, trackChannel))
+                Log.d("MIDI_PLAYER", "Track Added: Name=$trackName, Instrument=$trackInstrument, Channel=$trackChannel")
             }
 
-            // Final check to update instrument and channel information
-            if (isDrumChannel) {
-                onInstrumentUpdate?.invoke("Drums")
-                onChannelUpdate?.invoke(10)  // Channel for drums
-            } else {
-                onInstrumentUpdate?.invoke(instruments.firstOrNull() ?: "Unknown Instrument")
-                onChannelUpdate?.invoke(detectedChannel ?: 1)  // Default to channel 1 if none found
-            }
-
+            // Set the first track as default
+            currentTrackIndex = 0
+            updateCurrentTrack()
         } catch (e: Exception) {
             Log.e("MIDI_PLAYER", "Error parsing instrument and channel: ${e.message}")
         }
     }
+
+
+
+
+    private fun updateCurrentTrack() {
+        if (tracks.isNotEmpty()) {
+            val currentTrack = tracks[currentTrackIndex]
+            onInstrumentUpdate?.invoke(currentTrack.instrument)
+            onChannelUpdate?.invoke(currentTrack.channel)
+        }
+    }
+
+    fun changeTrack(index: Int) {
+        if (index in tracks.indices) {
+            currentTrackIndex = index
+            updateCurrentTrack() // Update the UI with the new track info
+        }
+    }
+
 
 
     // Set the instrument update callback
@@ -296,58 +328,56 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
 
                 val ticksPerQuarterNote = sequence.resolution.toDouble()
                 var tempo = storedTempo
-                val totalTicks = sequence.tickLength // Total ticks of the sequence
+                val totalTicks = sequence.tickLength
 
-                for (track in sequence.tracks) {
+                // Collect all track events and assign their instruments/channels
+                val allEvents = mutableListOf<Triple<Long, ByteArray, Int>>()
+                for ((trackIndex, track) in sequence.tracks.withIndex()) {
                     var lastEventTick = 0L
-
+                    val trackChannel = tracks.getOrNull(trackIndex)?.channel ?: 1 // Default to channel 1
                     for (i in 0 until track.size()) {
-                        if (!isPlaying) break
-
                         val event = track.get(i)
-                        if (event.tick < startTick) continue
-
-                        val tickDelta = event.tick - lastEventTick
-                        lastEventTick = event.tick
-                        currentTick = event.tick
-
-                        // Check if we reached the end of the sequence
-                        if (currentTick >= totalTicks) {
-                            mainHandler.post {
-                                onPlaybackComplete?.invoke()
-                            }
-                            break
+                        if (event.tick >= startTick) {
+                            lastEventTick = event.tick
+                            allEvents.add(Triple(event.tick, event.message.message, trackChannel) as Triple<Long, ByteArray, Int>)
                         }
-
-                        // Handle tempo change
-                        if (event.message is MetaMessage) {
-                            val metaMessage = event.message as MetaMessage
-                            if (metaMessage.type == 0x51 && metaMessage.data.size >= 3) {
-                                tempo = ((metaMessage.data[0].toInt() and 0xFF) shl 16) or
-                                        ((metaMessage.data[1].toInt() and 0xFF) shl 8) or
-                                        (metaMessage.data[2].toInt() and 0xFF)
-                                storedTempo = tempo
-                            }
-                        }
-
-                        // Calculate the delay in milliseconds based on tick difference and tempo
-                        val microsecondsPerTick = tempo / ticksPerQuarterNote
-                        val delayMillis = if (resumeTick == event.tick) 0L else (tickDelta * microsecondsPerTick / 1000).toLong()
-
-                        // Perform the delay and then update the elapsed time
-                        if (isPlaying && delayMillis > 0) {
-                            Thread.sleep(delayMillis)
-                        }
-
-                        // Update elapsed time on the UI thread every 1000 milliseconds
-                        mainHandler.post {
-                            onTimeUpdate?.invoke(getElapsedTimeInMillis())
-                        }
-
-                        // Send the MIDI event to MidiDriver
-                        val message = event.message.message
-                        midiDriver.write(message)
                     }
+                }
+                allEvents.sortBy { it.first }
+
+                // Play events with correct channel assignments
+                var previousTick = startTick
+                for ((tick, message, channel) in allEvents) {
+                    if (!isPlaying) break
+
+                    val tickDelta = tick - previousTick
+                    previousTick = tick
+                    currentTick = tick
+
+                    // End playback when reaching the end of sequence
+                    if (currentTick >= totalTicks) {
+                        mainHandler.post { onPlaybackComplete?.invoke() }
+                        break
+                    }
+
+                    // Adjust tempo based on meta message (0xFF 0x51)
+                    if (message.size >= 3 && message[0].toInt() == 0xFF && message[1].toInt() == 0x51) {
+                        tempo = ((message[2].toInt() and 0xFF) shl 16) or
+                                ((message[3].toInt() and 0xFF) shl 8) or
+                                (message[4].toInt() and 0xFF)
+                        storedTempo = tempo
+                    }
+
+                    // Calculate delay for accurate playback
+                    val microsecondsPerTick = tempo / ticksPerQuarterNote
+                    val delayMillis = (tickDelta * microsecondsPerTick / 1000).toLong()
+
+                    if (isPlaying && delayMillis > 0) Thread.sleep(delayMillis)
+                    mainHandler.post { onTimeUpdate?.invoke(getElapsedTimeInMillis()) }
+
+                    // Set the event to the assigned channel
+                    val adjustedMessage = message.copyOf().apply { this[0] = (this[0] and 0xF0.toByte()) or (channel - 1).toByte() }
+                    midiDriver.write(adjustedMessage)
                 }
             } catch (e: Exception) {
                 Log.e("MIDI_PLAYER", "Error during playback: ${e.message}")
@@ -358,6 +388,8 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
         }
         playbackThread?.start()
     }
+
+
 
     fun getMidiDuration(uri: Uri): Long? {
         return try {

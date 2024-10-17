@@ -1,5 +1,6 @@
 package io.github.jonathanlacabe.lightnote
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
@@ -191,6 +192,10 @@ class NewActivity : ComponentActivity() {
             }
         }
 
+        findViewById<TextView>(R.id.trackName).setOnClickListener {
+            showTrackSelectionMenu()
+        }
+
     }
 
     private fun updateFileNameTextView(fileName: String) {
@@ -376,11 +381,29 @@ class NewActivity : ComponentActivity() {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 
+    private fun showTrackSelectionMenu() {
+        val trackNames = midiPlaybackHandler.tracks.map { it.name }.toTypedArray()
+
+        AlertDialog.Builder(this)
+            .setTitle("Select Track")
+            .setItems(trackNames) { _, which ->
+                midiPlaybackHandler.changeTrack(which)
+                midiPlaybackHandler.pausePlayback() // Pause the music upon opening menu
+            }
+            .setCancelable(true)
+            .create()
+            .show()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
         midiPlaybackHandler.stopPlayback()
     }
+
+    private fun pausePlayback() {
+        midiPlaybackHandler.pausePlayback() // Call the pause method from MidiPlaybackHandler
+    }
+
 
     private fun startTutorialSequence() {
         // Placeholder for tutorial sequence logic

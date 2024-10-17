@@ -204,7 +204,10 @@
             android:textSize="25sp"
             android:fontFamily="@font/quadriga_bq"
             android:layout_marginStart="4dp"
-            android:gravity="center" />
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true" />
+
 
         <!-- Fancy Divider -->
         <View
