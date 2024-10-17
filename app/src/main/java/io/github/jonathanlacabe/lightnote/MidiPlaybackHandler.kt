@@ -232,39 +232,52 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
             val sequence = MidiSystem.getSequence(inputStream)
             val instruments = mutableSetOf<String>()
             var detectedChannel: Int? = null
+            var isDrumChannel = false
 
+            // Loop through tracks to check each event
             for (track in sequence.tracks) {
                 for (i in 0 until track.size()) {
                     val event = track.get(i)
                     val message = event.message
 
-                    // Extract instrument information if it's a Program Change message
-                    if (message != null && message.status in 0xC0..0xCF && (message.message?.size ?: 0) > 1) {
-                        val instrumentIndex = message.message!![1].toInt() and 0x7F
-                        if (instrumentIndex in gmInstruments.indices) {
-                            instruments.add(gmInstruments[instrumentIndex])
-                        }
-                    }
-
-                    // Extract channel information from the first Note On or Program Change message
-                    if (detectedChannel == null && message != null && message.message?.isNotEmpty() == true) {
+                    if (message != null && message.message?.isNotEmpty() == true) {
                         val statusByte = message.message!![0].toInt()
-                        if ((statusByte in 0x90..0x9F) || (statusByte in 0xC0..0xCF)) {
-                            detectedChannel = (statusByte and 0x0F) + 1 // Convert 0-based to 1-based channel number
-                            Log.d("MIDI_PLAYER", "Detected channel: $detectedChannel")
+                        val channel = (statusByte and 0x0F) + 1  // Convert to 1-based channel
+
+                        // Check for drum channel (channel 10) and set flag
+                        if (channel == 10) {
+                            isDrumChannel = true
+                            detectedChannel = 10
+                        }
+
+                        // Handle Program Change for instrument detection
+                        if (message.status in 0xC0..0xCF && (message.message?.size ?: 0) > 1) {
+                            val instrumentIndex = message.message!![1].toInt() and 0x7F
+                            if (instrumentIndex in gmInstruments.indices) {
+                                instruments.add(gmInstruments[instrumentIndex])
+                            }
+                            if (detectedChannel == null) {
+                                detectedChannel = channel
+                            }
                         }
                     }
                 }
             }
 
-            // Update the UI with instrument and channel information
-            onInstrumentUpdate?.invoke(instruments.firstOrNull() ?: "Unknown Instrument")
-            onChannelUpdate?.invoke(detectedChannel ?: 1) // Default to channel 1 if none found
+            // Final check to update instrument and channel information
+            if (isDrumChannel) {
+                onInstrumentUpdate?.invoke("Drums")
+                onChannelUpdate?.invoke(10)  // Channel for drums
+            } else {
+                onInstrumentUpdate?.invoke(instruments.firstOrNull() ?: "Unknown Instrument")
+                onChannelUpdate?.invoke(detectedChannel ?: 1)  // Default to channel 1 if none found
+            }
 
         } catch (e: Exception) {
             Log.e("MIDI_PLAYER", "Error parsing instrument and channel: ${e.message}")
         }
     }
+
 
     // Set the instrument update callback
     fun setOnInstrumentUpdateCallback(callback: (String) -> Unit) {
