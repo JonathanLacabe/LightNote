@@ -340,7 +340,7 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                         if (event.message is MetaMessage) {
                             val metaMessage = event.message as MetaMessage
                             if (metaMessage.type == 0x51 && metaMessage.data.size >= 3) {
-                                // Extract tempo from MetaMessage (0x51)
+                                // Correctly extract tempo from MetaMessage (0x51)
                                 tempo = ((metaMessage.data[0].toLong() and 0xFF) shl 16) or
                                         ((metaMessage.data[1].toLong() and 0xFF) shl 8) or
                                         (metaMessage.data[2].toLong() and 0xFF)
@@ -377,13 +377,17 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                     currentTick = tick
 
                     // 3. Handle tempo change (MetaMessage type 0x51)
-                    if (message.size >= 3 && message[0].toInt() == 0xFF && message[1].toInt() == 0x51) {
-                        tempo = ((message[2].toLong() and 0xFF) shl 16) or
+                    if (message[0].toInt() == 0xFF && message[1].toInt() == 0x51 && message.size >= 6) {
+                        // Correctly extract tempo in microseconds per quarter note (0x51 tempo event)
+                        val tempoChange = ((message[2].toLong() and 0xFF) shl 16) or
                                 ((message[3].toLong() and 0xFF) shl 8) or
                                 (message[4].toLong() and 0xFF)
-                        microsecondsPerTick = tempo / ticksPerQuarterNote
-                        storedTempo = tempo.toInt()
-                        Log.d("MIDI_PLAYER", "Tempo changed to: $tempo microseconds per quarter note")
+                        if (tempoChange > 0) {
+                            tempo = tempoChange
+                            microsecondsPerTick = tempo / ticksPerQuarterNote
+                            storedTempo = tempo.toInt()
+                            Log.d("MIDI_PLAYER", "Tempo changed to: $tempo microseconds per quarter note at tick $tick")
+                        }
                     }
 
                     // 4. Calculate delay based on the tempo and tick differences
@@ -417,6 +421,7 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
         }
         playbackThread?.start()
     }
+
 
     fun getMidiDuration(uri: Uri): Long? {
         return try {
