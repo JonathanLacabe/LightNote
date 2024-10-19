@@ -192,9 +192,26 @@ class NewActivity : ComponentActivity() {
             }
         }
 
+        // Track button functionality (change from long-click to normal click)
         findViewById<TextView>(R.id.trackName).setOnClickListener {
+            // Pause the playback before showing the track selection menu
+            if (isPlaying) {
+                midiPlaybackHandler.pausePlayback()
+            }
+            // Show the track selection menu
             showTrackSelectionMenu()
         }
+
+        // Track button functionality (change from long-click to normal click)
+        findViewById<TextView>(R.id.trackName).setOnClickListener {
+            // Pause the playback before showing the track selection menu
+            if (isPlaying) {
+                midiPlaybackHandler.pausePlayback()
+            }
+            // Show the track selection menu
+            showTrackSelectionMenu()
+        }
+
 
     }
 
@@ -388,7 +405,8 @@ class NewActivity : ComponentActivity() {
             .setTitle("Select Track")
             .setItems(trackNames) { _, which ->
                 midiPlaybackHandler.changeTrack(which)
-                midiPlaybackHandler.pausePlayback() // Pause the music upon opening menu
+                // Optionally resume playback here if needed
+                // midiPlaybackHandler.resumePlayback(midiFileUri)
             }
             .setCancelable(true)
             .create()

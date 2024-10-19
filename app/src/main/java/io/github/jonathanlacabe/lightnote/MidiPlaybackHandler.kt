@@ -17,6 +17,7 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
 
     private val midiDriver: MidiDriver = MidiDriver.getInstance()
     private var isPlaying = false
+    private var isRunning = false
     private var playbackThread: Thread? = null
     private var currentTick = 0L
     private var resumeTick = 0L
@@ -168,6 +169,9 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
     private var onChannelUpdate: ((Int) -> Unit)? = null
     private var onTypeUpdate: ((String) -> Unit)? = null
 
+    // Store instruments for each channel (channel -> instrument number)
+    private val channelInstruments = mutableMapOf<Int, Int>()
+
     data class TrackInfo(val name: String, val instrument: String, val channel: Int)
 
     val tracks = mutableListOf<TrackInfo>()
@@ -233,11 +237,12 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
         } ?: Log.e("MIDI_PLAYER", "Failed to load MIDI file from URI")
     }
 
-    // Modify the parseInstrument function to retrieve the channel number
+    // Modify the parseInstrumentAndChannel function to store the instrument for each channel
     private fun parseInstrumentAndChannel(inputStream: InputStream) {
         try {
             val sequence = MidiSystem.getSequence(inputStream)
             tracks.clear() // Clear previous track data
+            channelInstruments.clear() // Clear previous instrument data for channels
 
             // Loop through each track in the sequence
             for (track in sequence.tracks) {
@@ -274,6 +279,9 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                                 instruments.add(gmInstruments[instrumentIndex])
                             }
                             if (detectedChannel == null) detectedChannel = channel
+
+                            // Store the instrument for this channel
+                            channelInstruments[channel] = instrumentIndex
                         }
                     }
                 }
@@ -329,31 +337,33 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                 lastStartTime = System.currentTimeMillis()
 
                 val ticksPerQuarterNote = sequence.resolution.toDouble()
-                var tempo: Long = 500000L // Default to 500,000 microseconds per quarter note (120 BPM)
+                var tempo: Long = 500000L // Initial tempo: 120 BPM
                 var microsecondsPerTick = tempo / ticksPerQuarterNote
                 val totalTicks = sequence.tickLength
 
-                // 1. Find the initial tempo from the first MetaMessage (if it exists)
+                Log.d("MIDI_PLAYER", "Total ticks: $totalTicks, Ticks per quarter note: $ticksPerQuarterNote")
+                Log.d("MIDI_PLAYER", "Initial Tempo: $tempo microseconds per quarter note (120 BPM)")
+
+                // Gather all tempo changes and sort them by tick
+                val tempoChanges = mutableListOf<Pair<Long, Long>>() // (tick, tempo in microseconds per quarter note)
                 for (track in sequence.tracks) {
                     for (i in 0 until track.size()) {
                         val event = track.get(i)
                         if (event.message is MetaMessage) {
                             val metaMessage = event.message as MetaMessage
                             if (metaMessage.type == 0x51 && metaMessage.data.size >= 3) {
-                                // Correctly extract tempo from MetaMessage (0x51)
-                                tempo = ((metaMessage.data[0].toLong() and 0xFF) shl 16) or
+                                val newTempo = ((metaMessage.data[0].toLong() and 0xFF) shl 16) or
                                         ((metaMessage.data[1].toLong() and 0xFF) shl 8) or
                                         (metaMessage.data[2].toLong() and 0xFF)
-                                microsecondsPerTick = tempo / ticksPerQuarterNote
-                                storedTempo = tempo.toInt()
-                                Log.d("MIDI_PLAYER", "Initial Tempo: $tempo microseconds per quarter note")
-                                break
+                                tempoChanges.add(Pair(event.tick, newTempo))
+                                Log.d("MIDI_PLAYER", "Detected Tempo Change: $newTempo microseconds per quarter note at tick ${event.tick}")
                             }
                         }
                     }
                 }
+                tempoChanges.sortBy { it.first }
 
-                // 2. Gather all events, sorted by tick for proper playback order
+                // Gather all events, sorted by tick for proper playback order
                 val allEvents = mutableListOf<Triple<Long, ByteArray, Int>>()
                 for ((trackIndex, track) in sequence.tracks.withIndex()) {
                     for (i in 0 until track.size()) {
@@ -366,50 +376,75 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                         }
                     }
                 }
-                allEvents.sortBy { it.first } // Ensure events are sorted by tick
+                allEvents.sortBy { it.first }
 
                 var previousTick = startTick
+                var tempoIndex = 0 // Keep track of the current tempo change
+                var currentEventIndex = 0
+
+                // Tracking active notes and their durations
+                val activeNotes = mutableMapOf<Byte, Long>() // Note value -> start tick
+
                 for ((tick, message, channel) in allEvents) {
                     if (!isPlaying) break
+
+                    // Apply any pending tempo changes
+                    while (tempoIndex < tempoChanges.size && tempoChanges[tempoIndex].first <= tick) {
+                        val (changeTick, newTempo) = tempoChanges[tempoIndex]
+                        tempo = newTempo
+                        microsecondsPerTick = tempo / ticksPerQuarterNote
+                        Log.d("MIDI_PLAYER", "Applied Tempo Change: $tempo microseconds per quarter note at tick $changeTick")
+                        Log.d("MIDI_PLAYER", "New microseconds per tick: $microsecondsPerTick")
+                        tempoIndex++
+                    }
 
                     val tickDelta = tick - previousTick
                     previousTick = tick
                     currentTick = tick
 
-                    // 3. Handle tempo change (MetaMessage type 0x51)
-                    if (message[0].toInt() == 0xFF && message[1].toInt() == 0x51 && message.size >= 6) {
-                        // Correctly extract tempo in microseconds per quarter note (0x51 tempo event)
-                        val tempoChange = ((message[2].toLong() and 0xFF) shl 16) or
-                                ((message[3].toLong() and 0xFF) shl 8) or
-                                (message[4].toLong() and 0xFF)
-                        if (tempoChange > 0) {
-                            tempo = tempoChange
-                            microsecondsPerTick = tempo / ticksPerQuarterNote
-                            storedTempo = tempo.toInt()
-                            Log.d("MIDI_PLAYER", "Tempo changed to: $tempo microseconds per quarter note at tick $tick")
-                        }
-                    }
-
-                    // 4. Calculate delay based on the tempo and tick differences
+                    // Calculate delay based on the current tempo and tick differences
                     val delayMicroseconds = (tickDelta * microsecondsPerTick).toLong()
                     val delayMillis = delayMicroseconds / 1000 // Convert to milliseconds for Thread.sleep()
 
-                    Log.d("MIDI_PLAYER", "Tick: $tick, Tick Delta: $tickDelta, Delay: $delayMillis ms, Current Tempo: $tempo")
-
                     if (delayMillis > 0 && isPlaying) {
+                        Log.d("MIDI_PLAYER", "Delaying for $delayMillis ms")
+                        val startTime = System.currentTimeMillis()
                         Thread.sleep(delayMillis)
+                        val actualDelay = System.currentTimeMillis() - startTime
+                        Log.d("MIDI_PLAYER", "Actual delay was $actualDelay ms (expected $delayMillis ms)")
                     }
 
-                    // 5. Post elapsed time update to UI
+                    // Handle note-on and note-off events carefully
+                    if (message[0].toInt() and 0xF0 == 0x90 && message[2].toInt() > 0) {
+                        // Note On with velocity > 0 (Start playing a note)
+                        activeNotes[message[1]] = tick
+                        Log.d("MIDI_PLAYER", "Note On detected for note ${message[1]} at tick $tick")
+                    } else if (message[0].toInt() and 0xF0 == 0x80 || (message[0].toInt() and 0xF0 == 0x90 && message[2].toInt() == 0)) {
+                        // Note Off or Note On with velocity 0 (Stop playing a note)
+                        val startTick = activeNotes.remove(message[1])
+                        if (startTick != null) {
+                            val noteDurationTicks = tick - startTick
+                            val noteDurationMillis = (noteDurationTicks * microsecondsPerTick / 1000)
+                            Log.d("MIDI_PLAYER", "Note ${message[1]} played for $noteDurationMillis ms")
+                        } else {
+                            Log.e("MIDI_PLAYER", "Note Off detected without corresponding Note On for note ${message[1]} at tick $tick")
+                        }
+                    }
+
+                    // Stop processing events once playback reaches the total number of ticks
+                    if (tick >= totalTicks) break
+
+                    // Post elapsed time update to UI
                     mainHandler.post { onTimeUpdate?.invoke(getElapsedTimeInMillis()) }
 
-                    // 6. Handle sending correct message based on channel
+                    // Handle sending correct message based on channel
                     if (message[0].toInt() and 0xF0 == 0x90 && (message[0].toInt() and 0x0F) + 1 == 10) {
-                        midiDriver.write(message) // Channel 10 (Drums) - send raw note
+                        midiDriver.write(message) // Channel 10 (Drums)
                     } else {
                         val adjustedMessage = message.copyOf().apply { this[0] = (this[0] and 0xF0.toByte()) or (channel - 1).toByte() }
                         midiDriver.write(adjustedMessage)
                     }
+                    currentEventIndex++
                 }
 
             } catch (e: Exception) {
@@ -421,6 +456,8 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
         }
         playbackThread?.start()
     }
+
+
 
 
     fun getMidiDuration(uri: Uri): Long? {
@@ -456,13 +493,26 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
             Log.d("MIDI_PLAYER", "Resuming playback from tick $resumeTick with stored tempo $storedTempo")
             isPaused = false
             lastStartTime = System.currentTimeMillis()
+
+            // Restore instruments for each channel before resuming playback
+            for ((channel, instrument) in channelInstruments) {
+                // Send the Program Change message to set the correct instrument
+                val programChangeMessage = byteArrayOf((0xC0 or (channel - 1)).toByte(), instrument.toByte())
+                midiDriver.write(programChangeMessage)
+                Log.d("MIDI_PLAYER", "Restored Instrument: Channel=$channel, Instrument=$instrument")
+            }
+
             loadAndPlayMidiFile(uri, resumeTick) // Resume from stored tick and tempo
         }
     }
 
+
+
+
     fun stopPlayback() {
         if (isPlaying || isPaused) {
             isPlaying = false
+            isRunning = false
             isPaused = false
             currentTick = 0L // Reset current playback position
             resumeTick = 0L // Reset resume point
