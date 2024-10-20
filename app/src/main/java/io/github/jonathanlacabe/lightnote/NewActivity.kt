@@ -328,10 +328,39 @@ class NewActivity : ComponentActivity() {
         }
     }
 
-    // Function to play the piano note sound (using a simple MIDI or sound file)
+    // Function to play the piano note sound using MIDI
     private fun playPianoSound(note: String) {
-        // Logic to play piano note sound (implementation could vary based on your setup)
-        // You could use MIDI playback or sound samples
+        val midiNote = noteToMidiNumber(note)
+
+        // Stop any ongoing playback
+        if (isPlaying) {
+            isPlaying = false
+            midiPlaybackHandler.pausePlayback()
+        }
+
+        // Send a "note-on" command using MidiDriver
+        val midiDriver = MidiDriver.getInstance()
+        midiDriver.start()
+
+        // Send the "note-on" message with reduced velocity (e.g., 0x40 for softer volume)
+        val noteOnMessage = byteArrayOf(0x90.toByte(), midiNote.toByte(), 0x40.toByte()) // 0x40 is softer velocity
+        midiDriver.write(noteOnMessage)
+
+        // Optional: Stop the note after a short delay (for simulation purposes)
+        binding.pianoKeysScrollView.postDelayed({
+            val noteOffMessage = byteArrayOf(0x80.toByte(), midiNote.toByte(), 0x00.toByte()) // 0x00 velocity for "note-off"
+            midiDriver.write(noteOffMessage)
+            midiDriver.stop()
+        }, 500) // Stops the note after 500ms
+    }
+
+    // Function to map note names (e.g., "C4", "D#5") to MIDI note numbers
+    private fun noteToMidiNumber(note: String): Int {
+        val noteNames = listOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
+        val noteName = note.substring(0, note.length - 1)
+        val octave = note.last().toString().toInt()
+        val noteIndex = noteNames.indexOf(noteName)
+        return (octave + 1) * 12 + noteIndex
     }
 
 

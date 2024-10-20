@@ -376,13 +376,80 @@
 
     </LinearLayout>
 
+    <!-- Container for Track Name and Subdivision Bar -->
+    <LinearLayout
+        android:id="@+id/trackNameAndSubdivisionContainer"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toBottomOf="@id/middleMenuLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Track Name Section (aligned with piano keys) -->
+        <TextView
+            android:id="@+id/trackNameLabel"
+            android:layout_width="95dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Track Name"
+            android:textColor="#FFFFFF"
+            android:background="#715959"
+            android:textSize="17sp"
+            android:fontFamily="@font/quadriga_bq"
+            android:layout_marginRight="2dp" />
+
+        <!-- Subdivision Bar (aligned with piano roll grid) -->
+        <HorizontalScrollView
+            android:id="@+id/subdivisionScrollView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <!-- LinearLayout for the subdivision bar -->
+            <LinearLayout
+                android:id="@+id/subdivisionContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <!-- Example of subdivision notation -->
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="1/1"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="1/2"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <!-- Add more subdivision notations as needed -->
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/middleMenuLayout"
+        app:layout_constraintTop_toBottomOf="@id/trackNameAndSubdivisionContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
