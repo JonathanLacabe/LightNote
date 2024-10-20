@@ -6,7 +6,9 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
@@ -129,13 +131,16 @@ class NewActivity : ComponentActivity() {
             }
         }
 
-        // Ensure instrument text always has marquee enabled - DISABLED due to it jerking back into position with every event due to threading issues
-        // binding.instrument.isSelected = true
-
         // Set up instrument update callback
         midiPlaybackHandler.setOnInstrumentUpdateCallback { instrumentName ->
             runOnUiThread {
-                // Set text only if it is different to prevent resetting the marquee
+                Log.d("MIDI_PLAYER", "Instrument update callback fired. Instrument: $instrumentName")
+                // Always keep the track name as "Track" and only update the instrument
+                if (binding.trackName.text != "Track") {
+                    binding.trackName.text = "Track"
+                }
+
+                // Set the instrument text only if it is different to prevent unnecessary resets
                 if (binding.instrument.text != instrumentName) {
                     binding.instrument.text = instrumentName
                 }
@@ -155,6 +160,7 @@ class NewActivity : ComponentActivity() {
         // Set up the channel update callback
         midiPlaybackHandler.setOnChannelUpdateCallback { channelNumber ->
             runOnUiThread {
+                Log.d("MIDI_PLAYER", "Channel update callback fired. Channel: $channelNumber")
                 binding.channel.text = channelNumber.toString()
             }
         }
@@ -401,17 +407,36 @@ class NewActivity : ComponentActivity() {
     private fun showTrackSelectionMenu() {
         val trackNames = midiPlaybackHandler.tracks.map { it.name }.toTypedArray()
 
-        AlertDialog.Builder(this)
+        // Create a custom ArrayAdapter with a custom layout
+        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, trackNames) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent)
+
+                // Apply the custom style to each item
+                view.setBackgroundColor(resources.getColor(R.color.dialog_list_background)) // Custom background color
+                (view as TextView).setTextColor(resources.getColor(R.color.dialog_list_text)) // Custom text color
+                return view
+            }
+        }
+
+        AlertDialog.Builder(this, R.style.LightDialogTheme)
             .setTitle("Select Track")
-            .setItems(trackNames) { _, which ->
-                midiPlaybackHandler.changeTrack(which)
-                // Optionally resume playback here if needed
-                // midiPlaybackHandler.resumePlayback(midiFileUri)
+            .setAdapter(adapter) { _, which ->
+                midiPlaybackHandler.changeTrack(which) // This will trigger instrument and channel updates via callback
+
+                // Delay resuming playback to ensure the callbacks have time to update the UI
+                if (isPlaying) {
+                    midiFileUri?.let { uri ->
+                            midiPlaybackHandler.resumePlayback(uri) // 0ms delay
+                    }
+                }
             }
             .setCancelable(true)
             .create()
             .show()
     }
+
+
 
     override fun onDestroy() {
         super.onDestroy()

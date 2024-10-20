@@ -4,11 +4,15 @@
     <style name="AppTheme1" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.LightNote" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here -->
         <item name="colorPrimary">#FF5722</item>
         <item name="colorPrimaryDark">#E64A19</item>
         <item name="colorAccent">#FF4081</item>
         <item name="android:background">#323538</item>
+    </style>
+
+    <style name="LightDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textColorPrimary">#FFFFFF</item> <!-- Bright text color -->
+        <item name="android:background">#222222</item> <!-- Lighter background -->
     </style>
 
 </resources>
