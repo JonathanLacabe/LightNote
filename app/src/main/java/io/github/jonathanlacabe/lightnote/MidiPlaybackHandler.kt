@@ -357,8 +357,8 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                 Log.d("MIDI_PLAYER", "Total ticks: $totalTicks, Ticks per quarter note: $ticksPerQuarterNote")
                 Log.d("MIDI_PLAYER", "Initial Tempo: $tempo microseconds per quarter note (120 BPM)")
 
-                // Track and apply tempo changes
-                val tempoChanges = mutableListOf<Pair<Long, Long>>()
+                // Gather all tempo changes and sort them by tick
+                val tempoChanges = mutableListOf<Pair<Long, Long>>() // (tick, tempo in microseconds per quarter note)
                 for (track in sequence.tracks) {
                     for (i in 0 until track.size()) {
                         val event = track.get(i)
@@ -369,17 +369,20 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                                         ((metaMessage.data[1].toLong() and 0xFF) shl 8) or
                                         (metaMessage.data[2].toLong() and 0xFF)
                                 tempoChanges.add(Pair(event.tick, newTempo))
+                                Log.d("MIDI_PLAYER", "Detected Tempo Change: $newTempo microseconds per quarter note at tick ${event.tick}")
                             }
                         }
                     }
                 }
                 tempoChanges.sortBy { it.first }
 
+                // Gather all events, sorted by tick for proper playback order
                 val allEvents = mutableListOf<Triple<Long, ByteArray, Int>>()
                 for ((trackIndex, track) in sequence.tracks.withIndex()) {
                     for (i in 0 until track.size()) {
                         val event = track.get(i)
                         val message = event.message.message
+
                         if (event.tick >= startTick && message != null) {
                             val trackChannel = tracks.getOrNull(trackIndex)?.channel ?: 1
                             allEvents.add(Triple(event.tick, message, trackChannel))
@@ -389,17 +392,22 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                 allEvents.sortBy { it.first }
 
                 var previousTick = startTick
-                var tempoIndex = 0
-                val activeNotes = mutableMapOf<Byte, Long>()
+                var tempoIndex = 0 // Keep track of the current tempo change
+                var currentEventIndex = 0
+
+                // Tracking active notes and their durations
+                val activeNotes = mutableMapOf<Byte, Long>() // Note value -> start tick
 
                 for ((tick, message, channel) in allEvents) {
                     if (!isPlaying) break
 
-                    // Apply tempo changes as needed
+                    // Apply any pending tempo changes
                     while (tempoIndex < tempoChanges.size && tempoChanges[tempoIndex].first <= tick) {
                         val (changeTick, newTempo) = tempoChanges[tempoIndex]
                         tempo = newTempo
                         microsecondsPerTick = tempo / ticksPerQuarterNote
+                        Log.d("MIDI_PLAYER", "Applied Tempo Change: $tempo microseconds per quarter note at tick $changeTick")
+                        Log.d("MIDI_PLAYER", "New microseconds per tick: $microsecondsPerTick")
                         tempoIndex++
                     }
 
@@ -407,47 +415,49 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                     previousTick = tick
                     currentTick = tick
 
+                    // Calculate delay based on the current tempo and tick differences
                     val delayMicroseconds = (tickDelta * microsecondsPerTick).toLong()
-                    val delayMillis = delayMicroseconds / 1000
+                    val delayMillis = delayMicroseconds / 1000 // Convert to milliseconds for Thread.sleep()
+
                     if (delayMillis > 0 && isPlaying) {
+                        Log.d("MIDI_PLAYER", "Delaying for $delayMillis ms")
+                        val startTime = System.currentTimeMillis()
                         Thread.sleep(delayMillis)
+                        val actualDelay = System.currentTimeMillis() - startTime
+                        Log.d("MIDI_PLAYER", "Actual delay was $actualDelay ms (expected $delayMillis ms)")
                     }
 
-                    // Override Program Change (0xC0) messages for the selected track
-                    if (message[0].toInt() and 0xF0 == 0xC0) {
-                        // Always use the instrument assigned to the selected track's channel
-                        if (channel == tracks[currentTrackIndex].channel) {
-                            val newProgramChangeMessage = byteArrayOf(
-                                (0xC0 or (channel - 1)).toByte(),
-                                channelInstruments[channel]!!.toByte() // Override with selected instrument
-                            )
-                            Log.d("MIDI_PLAYER", "Overriding Program Change: Channel=$channel, Instrument=${gmInstruments[channelInstruments[channel]!!]}")
-                            midiDriver.write(newProgramChangeMessage)
-                        }
-                    } else {
-                        // Handle note-on and note-off events
-                        if (message[0].toInt() and 0xF0 == 0x90 && message[2].toInt() > 0) {
-                            activeNotes[message[1]] = tick
-                        } else if (message[0].toInt() and 0xF0 == 0x80 || (message[0].toInt() and 0xF0 == 0x90 && message[2].toInt() == 0)) {
-                            val startTick = activeNotes.remove(message[1])
-                            if (startTick != null) {
-                                val noteDurationTicks = tick - startTick
-                                val noteDurationMillis = (noteDurationTicks * microsecondsPerTick / 1000)
-                            }
-                        }
-
-                        // Write MIDI message to driver, adjusting for the correct channel
-                        if (tick >= totalTicks) break
-
-                        mainHandler.post { onTimeUpdate?.invoke(getElapsedTimeInMillis()) }
-
-                        if (message[0].toInt() and 0xF0 == 0x90 && (message[0].toInt() and 0x0F) + 1 == 10) {
-                            midiDriver.write(message) // Channel 10 (Drums)
+                    // Handle note-on and note-off events carefully
+                    if (message[0].toInt() and 0xF0 == 0x90 && message[2].toInt() > 0) {
+                        // Note On with velocity > 0 (Start playing a note)
+                        activeNotes[message[1]] = tick
+                        Log.d("MIDI_PLAYER", "Note On detected for note ${message[1]} at tick $tick")
+                    } else if (message[0].toInt() and 0xF0 == 0x80 || (message[0].toInt() and 0xF0 == 0x90 && message[2].toInt() == 0)) {
+                        // Note Off or Note On with velocity 0 (Stop playing a note)
+                        val startTick = activeNotes.remove(message[1])
+                        if (startTick != null) {
+                            val noteDurationTicks = tick - startTick
+                            val noteDurationMillis = (noteDurationTicks * microsecondsPerTick / 1000)
+                            Log.d("MIDI_PLAYER", "Note ${message[1]} played for $noteDurationMillis ms")
                         } else {
-                            val adjustedMessage = message.copyOf().apply { this[0] = (this[0] and 0xF0.toByte()) or (channel - 1).toByte() }
-                            midiDriver.write(adjustedMessage)
+                            Log.e("MIDI_PLAYER", "Note Off detected without corresponding Note On for note ${message[1]} at tick $tick")
                         }
                     }
+
+                    // Stop processing events once playback reaches the total number of ticks
+                    if (tick >= totalTicks) break
+
+                    // Post elapsed time update to UI
+                    mainHandler.post { onTimeUpdate?.invoke(getElapsedTimeInMillis()) }
+
+                    // Handle sending correct message based on channel
+                    if (message[0].toInt() and 0xF0 == 0x90 && (message[0].toInt() and 0x0F) + 1 == 10) {
+                        midiDriver.write(message) // Channel 10 (Drums)
+                    } else {
+                        val adjustedMessage = message.copyOf().apply { this[0] = (this[0] and 0xF0.toByte()) or (channel - 1).toByte() }
+                        midiDriver.write(adjustedMessage)
+                    }
+                    currentEventIndex++
                 }
 
             } catch (e: Exception) {
@@ -508,30 +518,12 @@ class MidiPlaybackHandler(private val contentResolver: ContentResolver) {
                         midiDriver.write(programChangeMessage)
                         Log.d("MIDI_PLAYER", "Restored Instrument: Channel=$channel, Instrument=${gmInstruments[instrument]}")
                     }
-
-                    // Update the instrument and channel text in the UI from the last selected track
-                    selectedInstrumentText?.let { instrumentName ->
-                        onInstrumentUpdate?.invoke(instrumentName)  // Update UI for instrument
-                        Log.d("MIDI_PLAYER", "UI Updated: Instrument=$instrumentName")
-                    }
-
-                    selectedChannelText?.let { channelNumber ->
-                        onChannelUpdate?.invoke(channelNumber)  // Update UI for channel
-                        Log.d("MIDI_PLAYER", "UI Updated: Channel=$channelNumber")
-                    }
-
-                }, 100)  // Small delay to ensure playback is underway before restoring instruments and updating UI text
+                }, 100)  // Small delay to ensure playback is underway before restoring instruments
             } ?: Log.e("MIDI_PLAYER", "Failed to open MIDI file for resuming playback")
 
             isPlaying = true // Set playing state to true after starting playback
         }
     }
-
-
-
-
-
-
 
     fun stopPlayback() {
         if (isPlaying || isPaused) {
