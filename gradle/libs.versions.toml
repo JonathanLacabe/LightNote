@@ -14,6 +14,7 @@ composeBom = "2024.04.01"
 material = "1.12.0"
 mididriver = "1.0.2"
 repo = "Tag"
+gridlayout = "1.0.0"
 
 [libraries]
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
@@ -36,6 +37,7 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 midi-driver = { module = "jp.kshoji:midi-driver", version.ref = "jpMidiDriver" }
 mididriver = { module = "com.github.bhaptics.midi:MidiDriver", version.ref = "mididriver" }
 repo = { module = "com.github.User:Repo", version.ref = "repo" }
+androidx-gridlayout = { group = "androidx.gridlayout", name = "gridlayout", version.ref = "gridlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

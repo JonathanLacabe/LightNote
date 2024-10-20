@@ -3,17 +3,23 @@ package io.github.jonathanlacabe.lightnote
 import android.app.AlertDialog
 import android.content.Intent
 import android.database.Cursor
+import android.view.Gravity
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.GridLayout
+import android.widget.LinearLayout
 import android.widget.PopupWindow
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import io.github.jonathanlacabe.lightnote.databinding.ActivityNewBinding
+import jp.kshoji.javax.sound.midi.MidiSystem
 import org.billthefarmer.mididriver.MidiDriver
 
 class NewActivity : ComponentActivity() {
@@ -33,6 +39,9 @@ class NewActivity : ComponentActivity() {
         updateFileNameTextView(currentFileName)
 
         midiPlaybackHandler = MidiPlaybackHandler(contentResolver)
+
+        setupPianoKeys()
+        setupPianoRoll()
 
         Log.d("MIDI_DRIVER", "MIDI Driver initialized")
 
@@ -231,8 +240,100 @@ class NewActivity : ComponentActivity() {
             showTrackSelectionMenu()
         }
 
-
     }
+
+    private fun setupPianoRoll() {
+        val pianoRollGrid = findViewById<GridLayout>(R.id.pianoRollGrid)
+
+        // Remove any existing views from the piano roll grid
+        pianoRollGrid.removeAllViews()
+
+        midiFileUri?.let { uri ->
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                val sequence = MidiSystem.getSequence(inputStream)
+                val ticksPerQuarterNote = sequence.resolution.toDouble()
+                val totalTicks = sequence.tickLength
+                val beatsPerBar = 4 // Assuming 4/4 time signature
+                val ticksPerBar = ticksPerQuarterNote * beatsPerBar
+                val totalBars = (totalTicks / ticksPerBar).toInt()
+
+                // Each bar has 16 columns (1/16th note subdivisions)
+                val numberOfColumns = totalBars * 16 + 64 // Add buffer columns
+
+                // Set grid row count (notes) and column count (subdivisions)
+                pianoRollGrid.rowCount = C8 - C2 + 1
+                pianoRollGrid.columnCount = numberOfColumns
+
+                // Populate rows in the piano roll for each note (C2..C8)
+                for (note in C2..C8) {
+                    // Add a row in the piano roll for each note (C2..C8)
+                    for (i in 0 until numberOfColumns) {
+                        val gridCell = View(this)
+                        gridCell.layoutParams = GridLayout.LayoutParams().apply {
+                            width = 45 // Adjust cell width
+                            height = 45 // Adjust cell height to match the piano key height
+                            setMargins(1, 1, 1, 1) // Adjust cell margins
+                        }
+                        // Different color for beat divisions and subdivision coloring logic
+                        if (i % 16 == 0) {
+                            gridCell.setBackgroundColor(Color.LTGRAY) // Lighter vertical line for beats
+                        } else {
+                            gridCell.setBackgroundColor(Color.DKGRAY) // Regular subdivision
+                        }
+                        pianoRollGrid.addView(gridCell)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupPianoKeys() {
+        val pianoKeysScrollView = findViewById<ScrollView>(R.id.pianoKeysScrollView)
+
+        // Set onClickListeners for each key (C2 to C8) by using their ids
+        val pianoKeys = listOf(
+            R.id.key_C2, R.id.key_CSharp2, R.id.key_D2, R.id.key_DSharp2, R.id.key_E2, R.id.key_F2,
+            R.id.key_FSharp2, R.id.key_G2, R.id.key_GSharp2, R.id.key_A2, R.id.key_ASharp2, R.id.key_B2,
+            R.id.key_C3, R.id.key_CSharp3, R.id.key_D3, R.id.key_DSharp3, R.id.key_E3, R.id.key_F3,
+            R.id.key_FSharp3, R.id.key_G3, R.id.key_GSharp3, R.id.key_A3, R.id.key_ASharp3, R.id.key_B3,
+            R.id.key_C4, R.id.key_CSharp4, R.id.key_D4, R.id.key_DSharp4, R.id.key_E4, R.id.key_F4,
+            R.id.key_FSharp4, R.id.key_G4, R.id.key_GSharp4, R.id.key_A4, R.id.key_ASharp4, R.id.key_B4,
+            R.id.key_C5, R.id.key_CSharp5, R.id.key_D5, R.id.key_DSharp5, R.id.key_E5, R.id.key_F5,
+            R.id.key_FSharp5, R.id.key_G5, R.id.key_GSharp5, R.id.key_A5, R.id.key_ASharp5, R.id.key_B5,
+            R.id.key_C6, R.id.key_CSharp6, R.id.key_D6, R.id.key_DSharp6, R.id.key_E6, R.id.key_F6,
+            R.id.key_FSharp6, R.id.key_G6, R.id.key_GSharp6, R.id.key_A6, R.id.key_ASharp6, R.id.key_B6,
+            R.id.key_C7, R.id.key_CSharp7, R.id.key_D7, R.id.key_DSharp7, R.id.key_E7, R.id.key_F7,
+            R.id.key_FSharp7, R.id.key_G7, R.id.key_GSharp7, R.id.key_A7, R.id.key_ASharp7, R.id.key_B7,
+            R.id.key_C8
+        )
+
+        // Assign onClickListeners to each key
+        for (keyId in pianoKeys) {
+            val keyView = findViewById<TextView>(keyId)
+            keyView.setOnClickListener {
+                val note = keyView.text.toString() // Get the note from the TextView
+                if (isPlaying) {
+                    isPlaying = false
+                    midiPlaybackHandler.pausePlayback()
+                }
+                playPianoSound(note) // Play the sound of the tapped note
+            }
+        }
+
+        // Scroll to center on C5 after the view has been laid out
+        pianoKeysScrollView.post {
+            val totalHeight = pianoKeysScrollView.getChildAt(0).height
+            val positionToScroll = totalHeight * (C8 - C5) / (C8 - C2)
+            pianoKeysScrollView.scrollTo(0, positionToScroll)
+        }
+    }
+
+    // Function to play the piano note sound (using a simple MIDI or sound file)
+    private fun playPianoSound(note: String) {
+        // Logic to play piano note sound (implementation could vary based on your setup)
+        // You could use MIDI playback or sound samples
+    }
+
 
     private fun updateFileNameTextView(fileName: String) {
         // Update the TextView with the new file name
@@ -469,5 +570,10 @@ class NewActivity : ComponentActivity() {
 
     companion object {
         const val REQUEST_CODE_OPEN_MIDI = 1
+
+        // Define constants for MIDI note numbers
+        const val C2 = 36
+        const val C5 = 72
+        const val C8 = 108
     }
 }
