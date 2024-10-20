@@ -15,9 +15,11 @@ class MainActivity : ComponentActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Handle New button click to navigate to NewActivity
+        // Handle New button click to navigate to NewActivity with pre-imported MIDI file
         binding.newButton.setOnClickListener {
-            val intent = Intent(this, NewActivity::class.java)
+            val intent = Intent(this, NewActivity::class.java).apply {
+                putExtra("MIDI_FILE_RESOURCE_ID", R.raw.debussy_arabesque_no_1)
+            }
             startActivity(intent)
         }
 

@@ -56,10 +56,23 @@ class NewActivity : ComponentActivity() {
             updateFileNameTextView(fileName ?: "Unknown File")
         }
 
+        // Check if a MIDI file resource ID was passed from MainActivity
+        intent.getIntExtra("MIDI_FILE_RESOURCE_ID", -1).takeIf { it != -1 }?.let { resourceId ->
+            // Load the pre-imported MIDI file from raw resources
+            val uri = Uri.parse("android.resource://${packageName}/$resourceId")
+            midiFileUri = uri
+            loadMidiFile(uri)  // Load and display the pre-imported MIDI file
+        }
+
         //upper space TextView show a toast with the full name on hold-down
         binding.fileNameTextView.setOnLongClickListener {
             Toast.makeText(this, currentFileName, Toast.LENGTH_SHORT).show()
             true
+        }
+
+        binding.makeLightsButton.setOnClickListener {
+            //Toast.makeText(this, "For Arduino functionality, see Help -> Github.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Thank you for using the app!", Toast.LENGTH_SHORT).show()
         }
 
         //File button
@@ -395,6 +408,12 @@ class NewActivity : ComponentActivity() {
         }
     }
 
+    private fun loadMidiFile(uri: Uri) {
+        midiPlaybackHandler.getMidiDuration(uri)?.let { durationMillis ->
+            binding.durationValue.text = formatDuration(durationMillis)
+        }
+        updateFileNameTextView("Debussy - Arabesque 1")  // Set the preloaded file name
+    }
 
     private fun formatDuration(durationMillis: Long): String {
         val totalSeconds = (durationMillis + 500) / 1000 // Round to the nearest second
@@ -442,11 +461,6 @@ class NewActivity : ComponentActivity() {
         super.onDestroy()
         midiPlaybackHandler.stopPlayback()
     }
-
-    private fun pausePlayback() {
-        midiPlaybackHandler.pausePlayback() // Call the pause method from MidiPlaybackHandler
-    }
-
 
     private fun startTutorialSequence() {
         // Placeholder for tutorial sequence logic

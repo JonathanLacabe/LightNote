@@ -117,7 +117,7 @@
             android:id="@+id/makeLightsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Make Lights!"
+            android:text="LightNote"
             android:textColor="#FFFFFF"
             android:textSize="31sp"
             android:fontFamily="@font/quadriga_bq"
