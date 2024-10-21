@@ -18,6 +18,8 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import io.github.jonathanlacabe.lightnote.databinding.ActivityNewBinding
 import jp.kshoji.javax.sound.midi.MidiSystem
 import org.billthefarmer.mididriver.MidiDriver
@@ -39,11 +41,26 @@ class NewActivity : ComponentActivity() {
         updateFileNameTextView(currentFileName)
 
         midiPlaybackHandler = MidiPlaybackHandler(contentResolver)
+        Log.d("MIDI_DRIVER", "MIDI Driver initialized")
 
         setupPianoKeys()
         setupPianoRoll()
 
-        Log.d("MIDI_DRIVER", "MIDI Driver initialized")
+        // Synchronize vertical scrolling of piano keys and the piano roll grid
+        binding.pianoKeysScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            // This assumes that your piano roll RecyclerView is capable of scrolling vertically
+            // Scroll the RecyclerView in sync with the piano keys
+            binding.pianoRollRecyclerView.scrollBy(0, scrollY)
+        }
+
+// Since RecyclerView itself doesn't have an OnScrollChangeListener like ScrollView,
+// we need to set up the synchronization in reverse using the LayoutManager of the RecyclerView.
+        binding.pianoRollRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                // Sync the scroll of piano keys ScrollView
+                binding.pianoKeysScrollView.scrollBy(0, dy)
+            }
+        })
 
         // Check if a MIDI file URI was passed from MainActivity
         intent.getStringExtra("MIDI_FILE_URI")?.let { uriString ->
@@ -243,49 +260,44 @@ class NewActivity : ComponentActivity() {
     }
 
     private fun setupPianoRoll() {
-        val pianoRollGrid = findViewById<GridLayout>(R.id.pianoRollGrid)
+        val pianoRollRecyclerView = findViewById<RecyclerView>(R.id.pianoRollRecyclerView)
 
-        // Remove any existing views from the piano roll grid
-        pianoRollGrid.removeAllViews()
+        // Convert dp to pixels
+        val displayMetrics = resources.displayMetrics
+        val cellWidthPx = (45 * displayMetrics.density).toInt()  // 45dp to pixels
+        val cellHeightWithMarginPx = (45 * displayMetrics.density).toInt() + (3 * displayMetrics.density).toInt() // 45dp height + margin
 
-        midiFileUri?.let { uri ->
-            contentResolver.openInputStream(uri)?.use { inputStream ->
-                val sequence = MidiSystem.getSequence(inputStream)
-                val ticksPerQuarterNote = sequence.resolution.toDouble()
-                val totalTicks = sequence.tickLength
-                val beatsPerBar = 4 // Assuming 4/4 time signature
-                val ticksPerBar = ticksPerQuarterNote * beatsPerBar
-                val totalBars = (totalTicks / ticksPerBar).toInt()
+        // Get the screen width and calculate how many columns should be visible at once
+        val screenWidthPx = displayMetrics.widthPixels
+        val visibleColumns = screenWidthPx / cellWidthPx
 
-                // Each bar has 16 columns (1/16th note subdivisions)
-                val numberOfColumns = totalBars * 16 + 64 // Add buffer columns
+        // GridLayoutManager that scrolls horizontally and handles column chunking
+        val gridLayoutManager = GridLayoutManager(this, 72, GridLayoutManager.HORIZONTAL, false)
+        pianoRollRecyclerView.layoutManager = gridLayoutManager
 
-                // Set grid row count (notes) and column count (subdivisions)
-                pianoRollGrid.rowCount = C8 - C2 + 1
-                pianoRollGrid.columnCount = numberOfColumns
+        // Adapter for the piano roll grid with chunking
+        val pianoRollAdapter = PianoRollAdapter(
+            rowCount = 72,              // 72 rows to match the number of keys
+            columnCount = 72,          // Total 1728 columns
+            cellWidth = cellWidthPx,     // Each cell is 45dp wide
+            cellHeight = cellHeightWithMarginPx // Each cell is 45dp tall
+        )
+        pianoRollRecyclerView.adapter = pianoRollAdapter
 
-                // Populate rows in the piano roll for each note (C2..C8)
-                for (note in C2..C8) {
-                    // Add a row in the piano roll for each note (C2..C8)
-                    for (i in 0 until numberOfColumns) {
-                        val gridCell = View(this)
-                        gridCell.layoutParams = GridLayout.LayoutParams().apply {
-                            width = 45 // Adjust cell width
-                            height = 45 // Adjust cell height to match the piano key height
-                            setMargins(1, 1, 1, 1) // Adjust cell margins
-                        }
-                        // Different color for beat divisions and subdivision coloring logic
-                        if (i % 16 == 0) {
-                            gridCell.setBackgroundColor(Color.LTGRAY) // Lighter vertical line for beats
-                        } else {
-                            gridCell.setBackgroundColor(Color.DKGRAY) // Regular subdivision
-                        }
-                        pianoRollGrid.addView(gridCell)
-                    }
-                }
-            }
+        // Sync vertical scrolling between piano keys and the grid
+        val pianoKeysScrollView = findViewById<ScrollView>(R.id.pianoKeysScrollView)
+        val verticalScrollView = findViewById<ScrollView>(R.id.verticalScrollView)
+
+        // Synchronize vertical scrolling between the two views
+        verticalScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            pianoKeysScrollView.scrollTo(0, scrollY)
+            pianoRollRecyclerView.scrollBy(0, scrollY) // Keep vertical scrolls in sync
         }
+
+        pianoKeysScrollView.isHorizontalScrollBarEnabled = false // Disable horizontal scrolling for piano keys
     }
+
+
 
     private fun setupPianoKeys() {
         val pianoKeysScrollView = findViewById<ScrollView>(R.id.pianoKeysScrollView)

@@ -393,10 +393,10 @@
             android:layout_width="95dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="Track Name"
+            android:text="Note"
             android:textColor="#FFFFFF"
             android:background="#715959"
-            android:textSize="17sp"
+            android:textSize="22sp"
             android:fontFamily="@font/quadriga_bq"
             android:layout_marginRight="2dp" />
 
@@ -443,45 +443,33 @@
     </LinearLayout>
 
 
-    <HorizontalScrollView
-        android:id="@+id/horizontalScrollView"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/trackNameAndSubdivisionContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Vertical ScrollView for scrolling piano keys and grid together -->
+        <!-- Vertical ScrollView for Piano Keys -->
         <ScrollView
-            android:id="@+id/verticalScrollView"
-            android:layout_width="wrap_content"
+            android:id="@+id/pianoKeysScrollView"
+            android:layout_width="95dp"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:background="#2A2B2D"
+            android:fillViewport="true"
+            android:scrollbars="none"
+            android:isScrollContainer="false">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <!-- Vertical ScrollView for Piano Keys -->
-            <ScrollView
-                android:id="@+id/pianoKeysScrollView"
-                android:layout_width="95dp"
-                android:layout_height="match_parent"
-                android:background="#2A2B2D"
-                android:fillViewport="true"
-                android:scrollbars="none">
-
-                <!-- LinearLayout to hold piano keys vertically -->
-                <LinearLayout
-                    android:id="@+id/pianoKeysContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center">
+            <!-- LinearLayout to hold piano keys vertically -->
+            <LinearLayout
+                android:id="@+id/pianoKeysContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
 
                     <!-- C8 -->
                     <TextView
@@ -1433,43 +1421,43 @@
                         android:layout_margin="1dp"/>
 
 
-                </LinearLayout>
-            </ScrollView>
+            </LinearLayout>
+        </ScrollView>
 
-            <!-- Divider between piano keys and grid -->
-            <View
-                android:id="@+id/pianoKeyDivider"
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="#FFFFFF" />
+        <!-- Divider between piano keys and grid -->
+        <View
+            android:id="@+id/pianoKeyDivider"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF" />
 
-            <!-- FrameLayout for the Piano Roll -->
-            <FrameLayout
-                android:id="@+id/pianoRollContainer"
+        <!-- HorizontalScrollView for the grid (not including piano keys) -->
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:scrollbars="horizontal">
+
+            <!-- This ScrollView allows vertical scrolling of the piano roll -->
+            <ScrollView
+                android:id="@+id/verticalScrollView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:fillViewport="true"
+                android:scrollbars="vertical">
 
-                <!-- Grid for the Piano Roll -->
-                <GridLayout
-                    android:id="@+id/pianoRollGrid"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:rowCount="128"
-                    android:columnCount="64"
-                    android:background="#4A4A4A">
+            <!-- RecyclerView for the Piano Roll -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/pianoRollRecyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical" /> <!-- Ensure vertical scrolling is enabled -->
+        </ScrollView>
+    </HorizontalScrollView>
 
-                    <!-- Example grid cells (to be populated dynamically) -->
-                    <View
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:background="#2A2B2D"
-                        android:layout_margin="1dp" />
-                </GridLayout>
-            </FrameLayout>
-
-        </LinearLayout>
-    </ScrollView>
-</HorizontalScrollView>
+    </LinearLayout>
 
 
 

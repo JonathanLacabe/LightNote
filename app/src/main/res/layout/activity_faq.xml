@@ -5,19 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/Theme.LightNote"
+    android:background="@drawable/background_faq"
     tools:context=".FaqActivity">
 
     <!-- Text for F.A.Q. page -->
     <TextView
         android:id="@+id/faqText"
-        android:layout_width="662dp"
-        android:layout_height="195dp"
-        android:layout_marginTop="70dp"
+        android:layout_width="800dp"
+        android:layout_height="225dp"
+        android:layout_marginTop="60dp"
         android:fontFamily="@font/didot_bold"
         android:text="Programming and Design by Jonathan Lacabe\nArtistry by Shoaib Pasha\n\nLightNote\nThus Spoke MIDI\n2024"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="30sp"
+        android:textSize="35sp"
+        android:background="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
