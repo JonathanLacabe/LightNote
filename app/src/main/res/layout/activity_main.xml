@@ -8,7 +8,7 @@
     android:theme="@style/Theme.LighterNote"
     tools:context=".MainActivity">
     <!--android:background="@drawable/background_with_constellations"-->
-    <!-- App Logo with Glow -->
+    <!--App Logo:-->
     <ImageView
         android:id="@+id/appLogo"
         android:layout_width="440dp"
@@ -23,7 +23,7 @@
     app:layout_constraintTop_toTopOf="parent"
     android:scaleType="fitCenter" />
 
-    <!-- New File Button with Glow -->
+    <!--New File:-->
 <Button
 android:id="@+id/newButton"
 android:layout_width="200dp"
@@ -39,7 +39,7 @@ app:layout_constraintTop_toBottomOf="@id/appLogo"
 app:layout_constraintEnd_toEndOf="parent"
 app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Open File Button -->
+    <!--Open File:-->
 <Button
 android:id="@+id/openButton"
 android:layout_width="200dp"
@@ -55,7 +55,7 @@ app:layout_constraintTop_toBottomOf="@id/newButton"
 app:layout_constraintEnd_toEndOf="parent"
 app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- F.A.Q. Button -->
+    <!--F.A.Q.:-->
 <Button
 android:id="@+id/faqButton"
 android:layout_width="200dp"

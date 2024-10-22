@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="#2A2B2D">
 
-    <!-- Top Button Layout (File, View, Help) -->
+    <!--Top Section Layout: File, view, help, filename, and LightNote. When arduino functionality is fully added, "LightNote" will be replaced by "Make Lights"-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topButtonsLayout"
         android:layout_width="0dp"
@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="10dp">
 
-        <!-- File Button -->
+        <!--File:-->
         <TextView
             android:id="@+id/fileButton"
             android:layout_width="wrap_content"
@@ -30,7 +30,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Divider 1 -->
+        <!--Divider between File & View:-->
         <View
             android:layout_width="2dp"
             android:layout_height="match_parent"
@@ -38,7 +38,7 @@
             app:layout_constraintStart_toEndOf="@id/fileButton"
             android:layout_marginStart="18dp" />
 
-        <!-- View Button -->
+        <!--View:-->
         <TextView
             android:id="@+id/viewButton"
             android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="37dp" />
 
-        <!-- Divider 2 -->
+        <!--Divider between View & Help:-->
         <View
             android:layout_width="2dp"
             android:layout_height="match_parent"
@@ -60,7 +60,7 @@
             app:layout_constraintStart_toEndOf="@id/viewButton"
             android:layout_marginStart="17dp" />
 
-        <!-- Help Button -->
+        <!--Help:-->
         <TextView
             android:id="@+id/helpButton"
             android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="37dp" />
 
-        <!-- Divider 3 -->
+        <!--Divider between Help and the filename:-->
         <View
             android:id="@+id/divider3"
             android:layout_width="2dp"
@@ -83,7 +83,7 @@
             app:layout_constraintStart_toEndOf="@id/helpButton"
             android:layout_marginStart="12dp" />
 
-        <!-- TextView for displaying and scrolling the file name -->
+        <!--Filename:-->
         <TextView
             android:id="@+id/fileNameTextView"
             android:layout_width="0dp"
@@ -103,7 +103,7 @@
             app:layout_constraintEnd_toStartOf="@id/divider4"
             android:layout_marginStart="2dp" />
 
-        <!-- Divider 4 -->
+        <!--Divider between filename and LightNote name:-->
         <View
             android:id="@+id/divider4"
             android:layout_width="2dp"
@@ -112,7 +112,7 @@
             app:layout_constraintStart_toStartOf="@id/makeLightsButton"
             android:layout_marginStart="-12dp" />
 
-        <!-- Make Lights Button -->
+        <!--LightNote ("Make Lights" in v2):-->
         <TextView
             android:id="@+id/makeLightsButton"
             android:layout_width="wrap_content"
@@ -127,7 +127,8 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Middle Menu for Track and Playback Controls -->
+    <!--Middle Menu:-->
+    <!--Track and Playback Controls.-->
     <LinearLayout
         android:id="@+id/middleMenuLayout"
         android:layout_width="match_parent"
@@ -141,7 +142,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Rewind Button -->
+        <!--Rewind:-->
         <ImageView
             android:id="@+id/rewindButton"
             android:layout_width="48dp"
@@ -150,7 +151,7 @@
             android:contentDescription="@string/rewind_button"
             app:tint="#FFFFFF" />
 
-        <!-- Divider 5 -->
+        <!--Divider between Rewind & Pause:-->
         <View
             android:id="@+id/divider5"
             android:layout_width="2dp"
@@ -158,7 +159,7 @@
             android:background="#5A5B5D"
             android:layout_marginStart="4dp" />
 
-        <!-- Pause Button -->
+        <!--Pause:-->
         <ImageView
             android:id="@+id/pauseButton"
             android:layout_width="48dp"
@@ -168,7 +169,7 @@
             android:layout_marginStart="4dp"
             app:tint="#FFFFFF" />
 
-        <!-- Divider 6 -->
+        <!--Divider between Pause and Play:-->
         <View
             android:id="@+id/divider6"
             android:layout_width="2dp"
@@ -176,7 +177,7 @@
             android:background="#5A5B5D"
             android:layout_marginStart="4dp" />
 
-        <!-- Play Button -->
+        <!--Play:-->
         <ImageView
             android:id="@+id/playButton"
             android:layout_width="48dp"
@@ -186,7 +187,7 @@
             android:layout_marginStart="4dp"
             app:tint="#FFFFFF" />
 
-        <!-- Divider 7 -->
+        <!--Divider between Play and the Track:-->
         <View
             android:id="@+id/divider7"
             android:layout_width="2dp"
@@ -194,12 +195,12 @@
             android:background="#5A5B5D"
             android:layout_marginStart="4dp" />
 
-        <!-- Track Name Display -->
+        <!--Track (will only ever show as Track):-->
         <TextView
             android:id="@+id/trackName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Track Name"
+            android:text="Track"
             android:textColor="#FFFFFF"
             android:textSize="25sp"
             android:fontFamily="@font/quadriga_bq"
@@ -209,7 +210,7 @@
             android:focusable="true" />
 
 
-        <!-- Fancy Divider -->
+        <!--Fancy Divider - all of the internal track options will have these.-->
         <View
             android:id="@+id/dividerType1"
             android:layout_width="6dp"
@@ -217,7 +218,7 @@
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
 
-        <!-- Type Display with Weight and Centered Text -->
+        <!--Type:-->
         <TextView
             android:id="@+id/type"
             android:layout_width="0dp"
@@ -231,7 +232,7 @@
             android:maxWidth="150dp"
             android:gravity="center" />
 
-        <!-- Fancy Divider -->
+        <!--Divider between Type and Channel:-->
         <View
             android:id="@+id/dividerType2"
             android:layout_width="6dp"
@@ -239,7 +240,7 @@
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
 
-        <!-- Channel Display -->
+        <!--Channel:-->
         <TextView
             android:id="@+id/channel"
             android:layout_width="wrap_content"
@@ -251,7 +252,7 @@
             android:layout_marginStart="4dp"
             android:gravity="center" />
 
-        <!-- Fancy Divider -->
+        <!--Divider between Type and Instruments:-->
         <View
             android:id="@+id/dividerType3"
             android:layout_width="6dp"
@@ -259,7 +260,7 @@
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="4dp" />
 
-        <!-- Instrument Display, slightly larger and centered -->
+        <!--Instrument:-->
         <TextView
             android:id="@+id/instrument"
             android:layout_width="0dp"
@@ -277,7 +278,7 @@
             android:focusableInTouchMode="true" />
 
 
-        <!-- Fancy Divider -->
+        <!--Divider between Instrument and Time:-->
         <View
             android:id="@+id/dividerType4"
             android:layout_width="6dp"
@@ -285,7 +286,7 @@
             android:background="@drawable/custom_divider_style"
             android:layout_marginStart="2dp" />
 
-        <!-- Time Display Layout, centered horizontally -->
+        <!--Time:-->
         <LinearLayout
             android:layout_width="73dp"
             android:layout_height="wrap_content"
@@ -293,7 +294,7 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <!-- Time Label -->
+            <!--Time Label:-->
             <TextView
                 android:id="@+id/timeLabel"
                 android:layout_width="wrap_content"
@@ -304,7 +305,7 @@
                 android:textSize="18sp"
                 android:gravity="center" />
 
-            <!-- Time Value Display -->
+            <!--Time Value:-->
             <TextView
                 android:id="@+id/timeValue"
                 android:layout_width="wrap_content"
@@ -316,7 +317,7 @@
                 android:gravity="center" />
         </LinearLayout>
 
-        <!-- Fancy Divider -->
+        <!--Divider between Time taken and Duration:-->
         <View
             android:id="@+id/dividerType5"
             android:layout_width="6dp"
@@ -324,7 +325,7 @@
             android:layout_marginStart="2dp"
             android:background="@drawable/custom_divider_style" />
 
-        <!-- Duration Display Layout, centered horizontally -->
+        <!--Duration:-->
         <LinearLayout
             android:layout_width="82dp"
             android:layout_height="wrap_content"
@@ -332,7 +333,7 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <!-- Duration Label -->
+            <!--Duration Label:-->
             <TextView
                 android:id="@+id/durationLabel"
                 android:layout_width="wrap_content"
@@ -343,7 +344,7 @@
                 android:textSize="18sp"
                 android:gravity="center" />
 
-            <!-- Duration Value Display -->
+            <!--Duration Value:-->
             <TextView
                 android:id="@+id/durationValue"
                 android:layout_width="wrap_content"
@@ -355,7 +356,7 @@
                 android:gravity="center" />
         </LinearLayout>
 
-        <!-- Fancy Divider -->
+        <!--Divider between Duration and Panic Button:-->
         <View
             android:id="@+id/dividerFinal"
             android:layout_width="6dp"
@@ -363,7 +364,7 @@
             android:layout_marginStart="2dp"
             android:background="@drawable/custom_divider_style"/>
 
-        <!-- Panic Button -->
+        <!--Panic Button:-->
         <ImageView
             android:id="@+id/panicButton"
             android:layout_width="56dp"
@@ -376,7 +377,8 @@
 
     </LinearLayout>
 
-    <!-- Container for Track Name and Subdivision Bar -->
+    <!--Middle Bar:-->
+    <!--Below the Middle section, a little space for the Track Name and Subdivision Bar-->
     <LinearLayout
         android:id="@+id/trackNameAndSubdivisionContainer"
         android:layout_width="match_parent"
@@ -387,7 +389,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Track Name Section (aligned with piano keys) -->
+        <!--Track Name:-->
+        <!--(aligned with piano keys, thankfully)-->
         <TextView
             android:id="@+id/trackNameLabel"
             android:layout_width="95dp"
@@ -400,7 +403,8 @@
             android:fontFamily="@font/quadriga_bq"
             android:layout_marginRight="2dp" />
 
-        <!-- Subdivision Bar (aligned with piano roll grid) -->
+        <!--Subdivision Bar:-->
+        <!--(aligned with piano roll grid)-->
         <HorizontalScrollView
             android:id="@+id/subdivisionScrollView"
             android:layout_width="0dp"
@@ -409,19 +413,24 @@
             android:fillViewport="true"
             android:scrollbars="none">
 
-            <!-- LinearLayout for the subdivision bar -->
+            <!--LinearLayout for the subdivision bar-->
             <LinearLayout
                 android:id="@+id/subdivisionContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <!-- Example of subdivision notation -->
+
+                <!--All of the individual subdivisions are below.-->
+                <!--In v2, versions beyond 4/4 time will be added to account for different midi files.
+                    The bulk are 4/4, so this shouldn't bee too much of an issue for now-->
+
+
                 <TextView
                     android:layout_width="45dp"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="1/1"
+                    android:text="1/4"
                     android:textColor="#FFFFFF"
                     android:background="#6B6B6B"
                     android:textSize="12sp"
@@ -431,17 +440,203 @@
                     android:layout_width="45dp"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="1/2"
+                    android:text="2/4"
                     android:textColor="#FFFFFF"
                     android:background="#6B6B6B"
                     android:textSize="12sp"
                     android:layout_marginRight="1dp" />
 
-                <!-- Add more subdivision notations as needed -->
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="3/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="1/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="2/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="3/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="2"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="1/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="2/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="3/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="3"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="1/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="2/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="3/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="1/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="2/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="3/4"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="5"
+                    android:textColor="#FFFFFF"
+                    android:background="#6B6B6B"
+                    android:textSize="12sp"
+                    android:layout_marginRight="1dp" />
+
+                <!--Subdivisions to be generated from the MidiPlaybackHandler.kt-->
             </LinearLayout>
         </HorizontalScrollView>
     </LinearLayout>
 
+
+
+    <!--Piano Keys/Roll section:-->
+    <!--All of the keys (72 rows) are done by hand individually,
+        but that could not be done for the piano grid, because the
+        pre-imported music "Debussy Arabesque No.1" has 108 bars,
+        with 16 columns per bar, meaning 100,000+ boxes. These are
+        generated by the computer while not using the memory to load
+        them all at once (I tried that, it crashed immediately).-->
 
     <LinearLayout
         android:orientation="horizontal"
@@ -453,7 +648,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Vertical ScrollView for Piano Keys -->
+        <!--Vertical ScrollView for Piano Keys:-->
         <ScrollView
             android:id="@+id/pianoKeysScrollView"
             android:layout_width="95dp"
@@ -463,7 +658,7 @@
             android:scrollbars="none"
             android:isScrollContainer="false">
 
-            <!-- LinearLayout to hold piano keys vertically -->
+            <!--LinearLayout to hold piano keys vertically:-->
             <LinearLayout
                 android:id="@+id/pianoKeysContainer"
                 android:layout_width="match_parent"
@@ -471,7 +666,7 @@
                 android:orientation="vertical"
                 android:gravity="center">
 
-                    <!-- C8 -->
+                    <!--C8-->
                     <TextView
                         android:id="@+id/key_C8"
                         android:layout_width="match_parent"
@@ -484,7 +679,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- B7 -->
+                    <!--B7-->
                     <TextView
                         android:id="@+id/key_B7"
                         android:layout_width="match_parent"
@@ -497,7 +692,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- A#7 -->
+                    <!--A#7-->
                     <TextView
                         android:id="@+id/key_ASharp7"
                         android:layout_width="match_parent"
@@ -510,7 +705,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- A7 -->
+                    <!--A7-->
                     <TextView
                         android:id="@+id/key_A7"
                         android:layout_width="match_parent"
@@ -523,7 +718,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- G#7 -->
+                    <!--G#7-->
                     <TextView
                         android:id="@+id/key_GSharp7"
                         android:layout_width="match_parent"
@@ -536,7 +731,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- G7 -->
+                    <!--G7-->
                     <TextView
                         android:id="@+id/key_G7"
                         android:layout_width="match_parent"
@@ -549,7 +744,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- F#7 -->
+                    <!--F#7-->
                     <TextView
                         android:id="@+id/key_FSharp7"
                         android:layout_width="match_parent"
@@ -562,7 +757,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- F7 -->
+                    <!--F7-->
                     <TextView
                         android:id="@+id/key_F7"
                         android:layout_width="match_parent"
@@ -575,7 +770,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- E7 -->
+                    <!--E7-->
                     <TextView
                         android:id="@+id/key_E7"
                         android:layout_width="match_parent"
@@ -588,7 +783,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- D#7 -->
+                    <!--D#7-->
                     <TextView
                         android:id="@+id/key_DSharp7"
                         android:layout_width="match_parent"
@@ -601,7 +796,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- D7 -->
+                    <!--D7-->
                     <TextView
                         android:id="@+id/key_D7"
                         android:layout_width="match_parent"
@@ -614,7 +809,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- C#7 -->
+                    <!--C#7-->
                     <TextView
                         android:id="@+id/key_CSharp7"
                         android:layout_width="match_parent"
@@ -627,7 +822,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- C7 -->
+                    <!--C7-->
                     <TextView
                         android:id="@+id/key_C7"
                         android:layout_width="match_parent"
@@ -640,7 +835,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- B6 -->
+                    <!--B6-->
                     <TextView
                         android:id="@+id/key_B6"
                         android:layout_width="match_parent"
@@ -653,7 +848,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- A#6 -->
+                    <!--A#6-->
                     <TextView
                         android:id="@+id/key_ASharp6"
                         android:layout_width="match_parent"
@@ -666,7 +861,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- A6 -->
+                    <!--A6-->
                     <TextView
                         android:id="@+id/key_A6"
                         android:layout_width="match_parent"
@@ -679,7 +874,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- G#6 -->
+                    <!--G#6-->
                     <TextView
                         android:id="@+id/key_GSharp6"
                         android:layout_width="match_parent"
@@ -692,7 +887,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- G6 -->
+                    <!--G6-->
                     <TextView
                         android:id="@+id/key_G6"
                         android:layout_width="match_parent"
@@ -705,7 +900,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- F#6 -->
+                    <!--F#6-->
                     <TextView
                         android:id="@+id/key_FSharp6"
                         android:layout_width="match_parent"
@@ -718,7 +913,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- F6 -->
+                    <!--F6-->
                     <TextView
                         android:id="@+id/key_F6"
                         android:layout_width="match_parent"
@@ -731,7 +926,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- E6 -->
+                    <!--E6-->
                     <TextView
                         android:id="@+id/key_E6"
                         android:layout_width="match_parent"
@@ -744,7 +939,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- D#6 -->
+                    <!--D#6-->
                     <TextView
                         android:id="@+id/key_DSharp6"
                         android:layout_width="match_parent"
@@ -757,7 +952,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- D6 -->
+                    <!--D6-->
                     <TextView
                         android:id="@+id/key_D6"
                         android:layout_width="match_parent"
@@ -770,7 +965,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- C#6 -->
+                    <!--C#6-->
                     <TextView
                         android:id="@+id/key_CSharp6"
                         android:layout_width="match_parent"
@@ -783,7 +978,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- C6 -->
+                    <!--C6-->
                     <TextView
                         android:id="@+id/key_C6"
                         android:layout_width="match_parent"
@@ -796,7 +991,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- B5 -->
+                    <!--B5-->
                     <TextView
                         android:id="@+id/key_B5"
                         android:layout_width="match_parent"
@@ -809,7 +1004,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- A#5 -->
+                    <!--A#5-->
                     <TextView
                         android:id="@+id/key_ASharp5"
                         android:layout_width="match_parent"
@@ -822,7 +1017,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- A5 -->
+                    <!--A5-->
                     <TextView
                         android:id="@+id/key_A5"
                         android:layout_width="match_parent"
@@ -835,7 +1030,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- G#5 -->
+                    <!--G#5-->
                     <TextView
                         android:id="@+id/key_GSharp5"
                         android:layout_width="match_parent"
@@ -848,7 +1043,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- G5 -->
+                    <!--G5-->
                     <TextView
                         android:id="@+id/key_G5"
                         android:layout_width="match_parent"
@@ -861,7 +1056,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- F#5 -->
+                    <!--F#5-->
                     <TextView
                         android:id="@+id/key_FSharp5"
                         android:layout_width="match_parent"
@@ -874,7 +1069,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- F5 -->
+                    <!--F5-->
                     <TextView
                         android:id="@+id/key_F5"
                         android:layout_width="match_parent"
@@ -887,7 +1082,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- E5 -->
+                    <!--E5-->
                     <TextView
                         android:id="@+id/key_E5"
                         android:layout_width="match_parent"
@@ -900,7 +1095,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- D#5 -->
+                    <!--D#5-->
                     <TextView
                         android:id="@+id/key_DSharp5"
                         android:layout_width="match_parent"
@@ -913,7 +1108,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- D5 -->
+                    <!--D5-->
                     <TextView
                         android:id="@+id/key_D5"
                         android:layout_width="match_parent"
@@ -926,7 +1121,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- C#5 -->
+                    <!--C#5-->
                     <TextView
                         android:id="@+id/key_CSharp5"
                         android:layout_width="match_parent"
@@ -939,7 +1134,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- C5 -->
+                    <!--C5-->
                     <TextView
                         android:id="@+id/key_C5"
                         android:layout_width="match_parent"
@@ -952,7 +1147,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- B4 -->
+                    <!--B4-->
                     <TextView
                         android:id="@+id/key_B4"
                         android:layout_width="match_parent"
@@ -965,7 +1160,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- A#4 -->
+                    <!--A#4-->
                     <TextView
                         android:id="@+id/key_ASharp4"
                         android:layout_width="match_parent"
@@ -978,7 +1173,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- A4 -->
+                    <!--A4-->
                     <TextView
                         android:id="@+id/key_A4"
                         android:layout_width="match_parent"
@@ -991,7 +1186,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- G#4 -->
+                    <!--G#4-->
                     <TextView
                         android:id="@+id/key_GSharp4"
                         android:layout_width="match_parent"
@@ -1004,7 +1199,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- G4 -->
+                    <!--G4-->
                     <TextView
                         android:id="@+id/key_G4"
                         android:layout_width="match_parent"
@@ -1017,7 +1212,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- F#4 -->
+                    <!--F#4-->
                     <TextView
                         android:id="@+id/key_FSharp4"
                         android:layout_width="match_parent"
@@ -1030,7 +1225,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- F4 -->
+                    <!--F4-->
                     <TextView
                         android:id="@+id/key_F4"
                         android:layout_width="match_parent"
@@ -1043,7 +1238,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- E4 -->
+                    <!--E4-->
                     <TextView
                         android:id="@+id/key_E4"
                         android:layout_width="match_parent"
@@ -1056,7 +1251,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- D#4 -->
+                    <!--D#4-->
                     <TextView
                         android:id="@+id/key_DSharp4"
                         android:layout_width="match_parent"
@@ -1069,7 +1264,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- D4 -->
+                    <!--D4-->
                     <TextView
                         android:id="@+id/key_D4"
                         android:layout_width="match_parent"
@@ -1082,7 +1277,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- C#4 -->
+                    <!--C#4-->
                     <TextView
                         android:id="@+id/key_CSharp4"
                         android:layout_width="match_parent"
@@ -1095,7 +1290,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- C4 -->
+                    <!--C4-->
                     <TextView
                         android:id="@+id/key_C4"
                         android:layout_width="match_parent"
@@ -1108,7 +1303,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- B3 -->
+                    <!--B3-->
                     <TextView
                         android:id="@+id/key_B3"
                         android:layout_width="match_parent"
@@ -1121,7 +1316,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- A#3 -->
+                    <!--A#3-->
                     <TextView
                         android:id="@+id/key_ASharp3"
                         android:layout_width="match_parent"
@@ -1134,7 +1329,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- A3 -->
+                    <!--A3-->
                     <TextView
                         android:id="@+id/key_A3"
                         android:layout_width="match_parent"
@@ -1147,7 +1342,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- G#3 -->
+                    <!--G#3-->
                     <TextView
                         android:id="@+id/key_GSharp3"
                         android:layout_width="match_parent"
@@ -1160,7 +1355,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- G3 -->
+                    <!--G3-->
                     <TextView
                         android:id="@+id/key_G3"
                         android:layout_width="match_parent"
@@ -1173,7 +1368,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- F#3 -->
+                    <!--F#3-->
                     <TextView
                         android:id="@+id/key_FSharp3"
                         android:layout_width="match_parent"
@@ -1186,7 +1381,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- F3 -->
+                    <!--F3-->
                     <TextView
                         android:id="@+id/key_F3"
                         android:layout_width="match_parent"
@@ -1199,7 +1394,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- E3 -->
+                    <!--E3-->
                     <TextView
                         android:id="@+id/key_E3"
                         android:layout_width="match_parent"
@@ -1212,7 +1407,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- D#3 -->
+                    <!--D#3-->
                     <TextView
                         android:id="@+id/key_DSharp3"
                         android:layout_width="match_parent"
@@ -1225,7 +1420,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- D3 -->
+                    <!--D3-->
                     <TextView
                         android:id="@+id/key_D3"
                         android:layout_width="match_parent"
@@ -1238,7 +1433,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- C#3 -->
+                    <!--C#3-->
                     <TextView
                         android:id="@+id/key_CSharp3"
                         android:layout_width="match_parent"
@@ -1251,7 +1446,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- C3 -->
+                    <!--C3-->
                     <TextView
                         android:id="@+id/key_C3"
                         android:layout_width="match_parent"
@@ -1264,7 +1459,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- B2 -->
+                    <!--B2-->
                     <TextView
                         android:id="@+id/key_B2"
                         android:layout_width="match_parent"
@@ -1277,7 +1472,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- A#2 -->
+                    <!--A#2-->
                     <TextView
                         android:id="@+id/key_ASharp2"
                         android:layout_width="match_parent"
@@ -1290,7 +1485,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- A2 -->
+                    <!--A2-->
                     <TextView
                         android:id="@+id/key_A2"
                         android:layout_width="match_parent"
@@ -1303,7 +1498,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- G#2 -->
+                    <!--G#2-->
                     <TextView
                         android:id="@+id/key_GSharp2"
                         android:layout_width="match_parent"
@@ -1316,7 +1511,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- G2 -->
+                    <!--G2-->
                     <TextView
                         android:id="@+id/key_G2"
                         android:layout_width="match_parent"
@@ -1329,7 +1524,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- F#2 -->
+                    <!--F#2-->
                     <TextView
                         android:id="@+id/key_FSharp2"
                         android:layout_width="match_parent"
@@ -1342,7 +1537,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- F2 -->
+                    <!--F2-->
                     <TextView
                         android:id="@+id/key_F2"
                         android:layout_width="match_parent"
@@ -1355,7 +1550,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- E2 -->
+                    <!--E2-->
                     <TextView
                         android:id="@+id/key_E2"
                         android:layout_width="match_parent"
@@ -1368,7 +1563,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- D#2 -->
+                    <!--D#2-->
                     <TextView
                         android:id="@+id/key_DSharp2"
                         android:layout_width="match_parent"
@@ -1381,7 +1576,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- D2 -->
+                    <!--D2-->
                     <TextView
                         android:id="@+id/key_D2"
                         android:layout_width="match_parent"
@@ -1394,7 +1589,7 @@
                         android:background="#4A4A4A"
                         android:layout_margin="1dp"/>
 
-                    <!-- C#2 -->
+                    <!--C#2-->
                     <TextView
                         android:id="@+id/key_CSharp2"
                         android:layout_width="match_parent"
@@ -1407,7 +1602,7 @@
                         android:background="#2A2B2D"
                         android:layout_margin="1dp"/>
 
-                    <!-- C2 -->
+                    <!--C2-->
                     <TextView
                         android:id="@+id/key_C2"
                         android:layout_width="match_parent"
@@ -1424,14 +1619,14 @@
             </LinearLayout>
         </ScrollView>
 
-        <!-- Divider between piano keys and grid -->
+        <!-- ivider between piano keys and the roll/grid:-->
         <View
             android:id="@+id/pianoKeyDivider"
             android:layout_width="2dp"
             android:layout_height="match_parent"
             android:background="#FFFFFF" />
 
-        <!-- HorizontalScrollView for the grid (not including piano keys) -->
+        <!--HorizontalScrollView for the grid (not including piano keys):-->
         <HorizontalScrollView
             android:id="@+id/horizontalScrollView"
             android:layout_width="0dp"
@@ -1440,7 +1635,8 @@
             android:fillViewport="true"
             android:scrollbars="horizontal">
 
-            <!-- This ScrollView allows vertical scrolling of the piano roll -->
+            <!--ScrollView for piano roll:-->
+            <!--Allows for vertical scrolling.-->
             <ScrollView
                 android:id="@+id/verticalScrollView"
                 android:layout_width="wrap_content"
@@ -1448,18 +1644,16 @@
                 android:fillViewport="true"
                 android:scrollbars="vertical">
 
-            <!-- RecyclerView for the Piano Roll -->
+            <!--RecyclerView for the piano roll:-->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/pianoRollRecyclerView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scrollbars="vertical" /> <!-- Ensure vertical scrolling is enabled -->
+                android:scrollbars="vertical" />
         </ScrollView>
     </HorizontalScrollView>
 
     </LinearLayout>
-
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
