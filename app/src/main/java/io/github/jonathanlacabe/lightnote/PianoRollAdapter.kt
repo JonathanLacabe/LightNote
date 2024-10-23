@@ -36,7 +36,7 @@ class PianoRollAdapter(
             holder.cellView.setBackgroundColor(Color.parseColor("#2E2E2E"))//Darker gray
         }
     }
-    
+
     override fun getItemCount(): Int {
         //Return the total number of boxes (row * col)
         return rowCount*columnCount

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/Theme.LightNote"
-    android:background="@drawable/background_faq"
+    android:background="@drawable/background_plain_new"
     tools:context=".FaqActivity">
 
     <!-- Text for F.A.Q. page -->
@@ -18,7 +18,7 @@
         android:text="Programming and Design by Jonathan Lacabe\nArtistry by Shoaib Pasha\n\nLightNote\nThus Spoke MIDI\n2024"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="35sp"
+        android:textSize="30sp"
         android:background="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,12 +30,12 @@
         android:id="@+id/backButton"
         android:layout_width="150dp"
         android:layout_height="60dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/button_background"
         android:fontFamily="@font/quadriga_bq"
         android:text="Back"
         android:textColor="#FFFFFF"
-        android:textSize="42sp"
+        android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
