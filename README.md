@@ -2,9 +2,16 @@
 
 LightNote is an app that streamlines midi playback and provides a means of visualizing music through a piano roll/keys system. The app has a very intuitive design, and we will continue expand built upon the app for a full Google Play release.
 
+<picture>
+ <a href = "https://raw.githubusercontent.com/JonathanLacabe/LightNote/refs/heads/master/PlayerScreen.png">
+  <source media="(prefers-color-scheme: dark)" srcset="PlayerScreen.png" width="1089px">
+  <img alt="Playback Screen" src="PlayerScreen.png" width="510px">
+ </a>
+</picture>
+
 ## Top Bar
 
-### Edit
+### File
 This button reveals the following options:
 -Open...
 -Exit
@@ -61,7 +68,7 @@ Above the Piano Roll is the subdivision bar, which scrolls horizontally alongsid
 On the left lower side of the screen, there is full piano of 72 notes, with the sharps given dark keys and natural given white keys. These notes range from C2 to C8, experimentally determined to be the minimum and maximum notes that can be played on modern Android phones (tested through the playing of chromatic scales). These keys scroll vertically with the piano roll.
 
 ## Piano Roll
-The piano roll section is directly alligned vertically with the piano keys, but it can move horizontally as well independently of the piano keys. Each box represents 1/4th of a note, with each row representing one key and each column/subdivision representing one beat of the music, providing a place for users to visualize the music.\
+The piano roll section is directly alligned vertically with the piano keys, but it can move horizontally as well independently of the piano keys. Each box represents 1/4th of a note, with each row representing one key and each column/subdivision representing one beat of the music, providing a place for users to visualize the music.
 
 
 In future updates, we will finalize the conversion of midi files into perfectly synthesized lightshows.
